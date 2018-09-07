@@ -172,10 +172,10 @@ void loop() {
 	joyPushed = analogRead(joyPush);
 
 	//Affichage du mode de tir
-	//Selecteur sur SEMI
+	//Selecteur sur FULL
 	if (selectorSwitch == HIGH)
 	{
-		switch (semiMode) {
+		switch (fullMode) {
 		case 1:
 			modeValue = "Semi";
 
@@ -194,10 +194,10 @@ void loop() {
 			break;
 		}
 	}
-	//selecteur sur FULL
+	//selecteur sur SEMI
 	else if (selectorSwitch == LOW)
 	{
-		switch (fullMode) {
+		switch (semiMode) {
 		case 1:
 			modeValue = "Semi";
 
@@ -221,7 +221,7 @@ void loop() {
 	if (triggerSwitch == HIGH && triggerStateFired == false && chargerState == true && blocageState == false)
 	{
 		//Selecteur sur SEMI
-		if (selectorSwitch == HIGH)
+		if (selectorSwitch == LOW)
 		{
 			switch (semiMode) {
 			case 1:
@@ -256,13 +256,17 @@ void loop() {
 
 				triggerStateFired = true;
 
-				delay(timeBolt + 000);
+				delay(timeBolt * 1000);
+
+				if (SnipeReady) {
+					armed.armed(reloadLEDGreen);
+				}
 
 				break;
 			}
 		}
 		//selecteur sur FULL
-		else if (selectorSwitch == LOW)
+		else if (selectorSwitch == HIGH)
 		{
 			switch (fullMode) {
 			case 1:
@@ -296,7 +300,11 @@ void loop() {
 
 				triggerStateFired = true;
 
-				delay(timeBolt + 000);
+				delay(timeBolt * 1000);
+
+				if (SnipeReady) {
+					armed.armed(reloadLEDGreen);
+				}
 
 				break;
 			}
@@ -314,13 +322,6 @@ void loop() {
 	//Option relatives au chargeur
 	if (chargerOption == true)
 	{
-		if (buzzOption == true && bbrest <= 0 && alarmEmptyPassed == false)
-		{
-			tone(buzzer, 4000, 50);
-			delay(200);
-			noTone(buzzer);
-		}
-
 		if (chargerSwitch == HIGH)
 		{
 			chargerState = true;
@@ -368,6 +369,12 @@ void loop() {
 		if (bbrest <= 0 && alarmEmptyPassed == false)
 		{
 			alarmEmptyPassed = alarm.AlarmEmpty(reloadLEDRed);
+			if (buzzOption == true)
+			{
+				tone(buzzer, 4000, 500);
+				delay(200);
+				noTone(buzzer);
+			}
 		}
 
 		//Alarme "Presque plus de billes"
@@ -928,13 +935,13 @@ void loop() {
 			{
 				//modification de valeur
 
-				if (paramValueM && dwel >= 30)
+				if (paramValueM && dwel >= 26)
 				{
-					dwel = dwel - 10;
+					dwel = dwel - 1;
 				}
-				else if (paramValueP && dwel <= 140)
+				else if (paramValueP && dwel <= 110)
 				{
-					dwel = dwel + 10;
+					dwel = dwel + 1;
 				}
 			}
 
