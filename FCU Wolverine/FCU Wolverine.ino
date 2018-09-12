@@ -30,6 +30,7 @@ int joyH = 12;
 int joyD = 11; 
 int joyPush = A0;
 int chargingHandle = A7;
+int BatteryRead = A1;
 
 //mise des états des switchs a zero
 int triggerSwitch = 0;
@@ -80,6 +81,7 @@ bool alarmLowPassed = false;
 bool alarmEmptyPassed = false;
 bool enterPressed = false;
 bool enterPressedSave = false;
+bool alarmBatLow = false;
 
 //déclaratgion des adresse des parametre dans l'eeprom
 int ROFFullAdress = 0; //2
@@ -160,7 +162,7 @@ void setup() {
 
 void loop() {
 
-	double voltValue = voltCtrl.VoltageValue(A1, 1);
+	double voltValue = voltCtrl.VoltageValue(BatteryRead);
 	triggerSwitch = digitalRead(trigger);
 	selectorSwitch = digitalRead(selector);
 	chargerSwitch = digitalRead(charger);
@@ -218,7 +220,7 @@ void loop() {
 	}
 
 	//Tir
-	if (triggerSwitch == HIGH && triggerStateFired == false && chargerState == true && blocageState == false)
+	if (triggerSwitch == HIGH && triggerStateFired == false && chargerState == true && blocageState == false && alarmBatLow == false)
 	{
 		//Selecteur sur SEMI
 		if (selectorSwitch == LOW)
@@ -369,11 +371,10 @@ void loop() {
 		if (bbrest <= 0 && alarmEmptyPassed == false)
 		{
 			alarmEmptyPassed = alarm.AlarmEmpty(reloadLEDRed);
+
 			if (buzzOption == true)
 			{
-				tone(buzzer, 4000, 500);
-				delay(200);
-				noTone(buzzer);
+				alarm.BuzzerLow(buzzer);
 			}
 		}
 
@@ -391,6 +392,24 @@ void loop() {
 	}
 
 	//Alarme Tension Batterie
+	if (alarmBatOption == true)
+	{
+		if (buzzOption == true)
+		{
+			alarm.BuzzerBat(buzzer);
+		}
+
+		alarm.AlarmBat(reloadLEDRed);
+
+		if (voltCtrl.alarmVoltage)
+		{
+			alarmBatLow = true;
+		}
+		else {
+			alarmBatLow
+		}
+	}
+
 
 	//lecture du JoyStick
 	if (joyBPush == HIGH)
@@ -939,7 +958,7 @@ void loop() {
 				{
 					dwel = dwel - 1;
 				}
-				else if (paramValueP && dwel <= 110)
+				else if (paramValueP && dwel <= 109)
 				{
 					dwel = dwel + 1;
 				}

@@ -28,5 +28,21 @@ bool Alarm::AlarmLowBB(int pin)
 
 void Alarm::AlarmBat(int pin)
 {
+	digitalWrite(pin, 1);
+	delay(250);
+	digitalWrite(pin, 0);
+}
 
+void Alarm::BuzzerLow(int pin)
+{
+	tone(pin, 4000, 500);
+	delay(200);
+	noTone(pin);
+}
+
+void Alarm::BuzzerBat(int pin);
+{
+	tone(buzzer, 2000, 1000);
+	delay(300);
+	noTone(buzzer);
 }

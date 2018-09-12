@@ -10,6 +10,8 @@ public:
 	bool AlarmEmpty(int pin);
 	bool AlarmLowBB(int pin);
 	void AlarmBat(int pin);
+	void BuzzerLow(int pin);
+	void BuzzerBat(int pin);
 };
 
 #endif
