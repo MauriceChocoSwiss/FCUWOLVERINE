@@ -40,7 +40,6 @@ bool VoltageCtrl::alarmVoltage(int pin)
 	{
 		return true;
 	}
-	else { 
-		return false;
-	}
+
+	return false;
 }

@@ -393,30 +393,36 @@ void loop() {
 	//Verrouillage de l'écran
 	if (verEcranOption == true)
 	{
-		if ((millis() - temps) > verrTimer * 1000)
+		int vertime = verrTimer * 1000;
+
+		if ((millis() - temps) > vertime && ecranVerr == false)
 		{
 			ecranVerr = true;
+			menu.MenuVer();
+			delay(1500);
 		}
 
-		if ((millis() - tempsDever) > 3000 && appuieLong)
+		if ((millis() - tempsDever) > 4000 && appuieLong)
 		{
 			ecranVerr = false;
+			menu.MenuDever();
+			delay(1500);
 		}
 	}
 
 	//Alarme Tension Batterie
 	if (alarmBatOption == true)
 	{
-		if (buzzOption == true)
+		if (voltCtrl.alarmVoltage(BatteryRead))
 		{
-			alarm.BuzzerBat(buzzer);
-		}
+			alarm.AlarmBat(reloadLEDRed);
 
-		alarm.AlarmBat(reloadLEDRed);
-
-		if (voltCtrl.alarmVoltage)
-		{
 			alarmBatLow = true;
+
+			if (buzzOption == true)
+			{
+				alarm.BuzzerBat(buzzer);
+			}
 		}
 		else {
 			alarmBatLow = false;
@@ -448,7 +454,7 @@ void loop() {
 				}
 				temps = millis();
 			}
-			delay(500);
+			delay(200);
 		}
 
 		if (joyHPush == HIGH)
@@ -472,7 +478,7 @@ void loop() {
 
 			temps = millis();
 
-			delay(500);
+			delay(200);
 		}
 
 		if (joyDPush == HIGH && enterPressed == false)
@@ -484,7 +490,7 @@ void loop() {
 
 			temps = millis();
 
-			delay(500);
+			delay(200);
 		}
 
 		if (joyGPush == HIGH && enterPressed == false)
@@ -496,7 +502,7 @@ void loop() {
 
 			temps = millis();
 
-			delay(500);
+			delay(200);
 		}
 	}
 
@@ -527,10 +533,10 @@ void loop() {
 			}
 		}
 
-		delay(500);
+		delay(100);
 	}
 
-	if (joyPushed <= 1000 && appuieLong == true)
+	if (joyPushed <= 900 && appuieLong == true)
 	{
 		appuieLong = false;	
 	}

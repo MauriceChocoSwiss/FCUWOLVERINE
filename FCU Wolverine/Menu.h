@@ -16,6 +16,8 @@ public:
 	void MenuChargeur2(bool alarm, int alarmLowBB, bool chargingHandle, bool greenLight, int sousMenuValue);
 	void MenuSetting(int veille, bool verrou, bool LowBat, int sousMenuValue);
 	void MenuSetting2(int semi, int full, int dwel, int sousMenuValue);
+	void MenuDever();
+	void MenuVer();
 };
 
 #endif

@@ -71,7 +71,6 @@ void Menu::MainDisplay(double voltValue, int bbrest, int bbrestChargeur, String 
 	displayMenu.display();
 }
 
-
 void Menu::MenuFullBurst(int ROFFull, int ROFBurst, int QteBB,int sousMenuValue)
 {
 	displayMenu.clearDisplay();
@@ -312,6 +311,32 @@ void Menu::MenuSetting2(int semi, int full, int dwel, int sousMenuValue)
 	displayMenu.print("DWEL:");
 	displayMenu.print(dwel);
 
+
+	displayMenu.display();
+}
+
+void Menu::MenuDever()
+{
+	displayMenu.clearDisplay();
+
+	displayMenu.setTextSize(1);
+	displayMenu.setTextColor(WHITE);
+
+	displayMenu.setCursor(0, 12);
+	displayMenu.print("Deverrouillage !");
+
+	displayMenu.display();
+}
+
+void Menu::MenuVer()
+{
+	displayMenu.clearDisplay();
+
+	displayMenu.setTextSize(1);
+	displayMenu.setTextColor(WHITE);
+
+	displayMenu.setCursor(0, 12);
+	displayMenu.print("Verrouillage !");
 
 	displayMenu.display();
 }

@@ -40,9 +40,9 @@ void Alarm::BuzzerLow(int pin)
 	noTone(pin);
 }
 
-void Alarm::BuzzerBat(int pin);
+void Alarm::BuzzerBat(int pin)
 {
-	tone(buzzer, 2000, 1000);
+	tone(pin, 1500, 1000);
 	delay(300);
-	noTone(buzzer);
+	noTone(pin);
 }
