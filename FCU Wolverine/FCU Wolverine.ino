@@ -406,7 +406,7 @@ void loop() {
 			alarmBatLow = true;
 		}
 		else {
-			alarmBatLow
+			alarmBatLow = false;
 		}
 	}
 
