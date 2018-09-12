@@ -5,7 +5,7 @@ Petite présentation des fonctionnalités de cette petite carte sur base arduino
 
 Je vais expliquer les menus dans l'ordre 1 par 1.
 
-Les valeur 0 ou 1 signifient respectivement, Non et Oui.
+Les valeurs 0 ou 1 signifient respectivement, Non et Oui.
 
 Menu principal -> 
 
@@ -17,13 +17,13 @@ Menu principal ->
   
   -En bas à droit: Tension de la b atterie.
 
-Les menus seront ensuite expliqué dans le cas ou vous actionnez le joystick vers le haut.
+Les menus seront ensuite expliqués dans le cas ou vous actionnez le joystick vers le haut.
 
 Menu Burst -> 
 
-  -En haut à gauche: Rate of fire en mode full, valeur bloqué à 35 max (nbr de billes par secondes).
+  -En haut à gauche: Rate of fire en mode full, valeur bloquée à 35 max (nbr de billes par secondes).
   
-  -En bas à gauche: Rate of fire en mode Burst(rafale), valeur bloqué à 35 max (nbr de billes par secondes).
+  -En bas à gauche: Rate of fire en mode Burst(rafale), valeur bloquée à 35 max (nbr de billes par secondes).
   
   -En bas à droite: Nombre de billes de la rafale.
 
@@ -56,7 +56,7 @@ Menu Chargeur 2 ->
 
 MenuSettings -> 
   
-  -En haut à gauche: Activation du verouillage d'écran.
+  -En haut à gauche: Activation du verouillage d'écran -> délai de dévérouillage : 3 secs.
   
   -En haut à droite: Delai d'extinction en secondes, avance de 3à sec en 30 sec.
   
