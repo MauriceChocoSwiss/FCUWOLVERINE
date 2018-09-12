@@ -61,6 +61,8 @@ int sousMenuValue = 0;
 bool paramValueP = false;
 bool paramValueM = false;
 int bbtire = 0;
+long temps;
+long tempsDever;
 
 //definition des options
 bool chargerOption;
@@ -82,6 +84,8 @@ bool alarmEmptyPassed = false;
 bool enterPressed = false;
 bool enterPressedSave = false;
 bool alarmBatLow = false;
+bool ecranVerr = false;
+bool appuieLong = false;
 
 //déclaratgion des adresse des parametre dans l'eeprom
 int ROFFullAdress = 0; //2
@@ -158,6 +162,7 @@ void setup() {
 	EEPROM.get(alarmBatAdress, alarmBatOption);
 
 	menu.StartMenu(buzzer);
+	temps = millis();
 }
 
 void loop() {
@@ -388,7 +393,15 @@ void loop() {
 	//Verrouillage de l'écran
 	if (verEcranOption == true)
 	{
+		if ((millis() - temps) > verrTimer * 1000)
+		{
+			ecranVerr = true;
+		}
 
+		if ((millis() - tempsDever) > 3000 && appuieLong)
+		{
+			ecranVerr = false;
+		}
 	}
 
 	//Alarme Tension Batterie
@@ -412,71 +425,79 @@ void loop() {
 
 
 	//lecture du JoyStick
-	if (joyBPush == HIGH)
-	{
-		if (enterPressed)
+	if (ecranVerr == false) {
+		if (joyBPush == HIGH)
 		{
 			if (enterPressed)
 			{
-				paramValueM = true;
+				if (enterPressed)
+				{
+					paramValueM = true;
+				}
 			}
+			else {
+				sousMenuValue = 0;
+
+				if (menuValue == 0)
+				{
+					menuValue = 6;
+				}
+				else
+				{
+					menuValue = menuValue - 1;
+				}
+				temps = millis();
+			}
+			delay(500);
 		}
-		else {
-			sousMenuValue = 0;
 
-			if (menuValue == 0)
-			{
-				menuValue = 6;
-			}
-			else
-			{
-				menuValue = menuValue - 1;
-			}
-		}
-
-		delay(500);
-	}
-
-	if (joyHPush == HIGH)
-	{
-		if (enterPressed)
+		if (joyHPush == HIGH)
 		{
-			paramValueP = true;
-		}
-		else {
-			sousMenuValue = 0;
-
-			if (menuValue == 6)
+			if (enterPressed)
 			{
-				menuValue = 0;
+				paramValueP = true;
 			}
-			else
+			else {
+				sousMenuValue = 0;
+
+				if (menuValue == 6)
+				{
+					menuValue = 0;
+				}
+				else
+				{
+					menuValue = menuValue + 1;
+				}
+			}
+
+			temps = millis();
+
+			delay(500);
+		}
+
+		if (joyDPush == HIGH && enterPressed == false)
+		{
+			if (sousMenuValue < 3)
 			{
-				menuValue = menuValue + 1;
+				sousMenuValue = sousMenuValue + 1;
 			}
+
+			temps = millis();
+
+			delay(500);
 		}
 
-		delay(500);
-	}
-
-	if (joyDPush == HIGH && enterPressed == false)
-	{
-		if (sousMenuValue < 3)
+		if (joyGPush == HIGH && enterPressed == false)
 		{
-			sousMenuValue = sousMenuValue + 1;
+			if (sousMenuValue > 0)
+			{
+				sousMenuValue = sousMenuValue - 1;
+			}
+
+			temps = millis();
+
+			delay(500);
 		}
-
-		delay(500);
-	}
-
-	if (joyGPush == HIGH && enterPressed == false)
-	{
-		if (sousMenuValue > 0)
-		{
-			sousMenuValue = sousMenuValue - 1;
-		}
-
-		delay(500);
 	}
 
 	if (joyPushed >= 1020)
@@ -492,7 +513,26 @@ void loop() {
 			enterPressedSave = false;
 		}
 
+		if (ecranVerr == false)
+		{
+			temps = millis();
+		}
+
+		if (ecranVerr == true)
+		{
+			if (appuieLong == false)
+			{
+				tempsDever = millis();
+				appuieLong = true;
+			}
+		}
+
 		delay(500);
+	}
+
+	if (joyPushed <= 1000 && appuieLong == true)
+	{
+		appuieLong = false;	
 	}
 
 	//affichage du menu
@@ -856,11 +896,11 @@ void loop() {
 			{
 				//modification de valeur
 
-				if (paramValueM && verrTimer >= 60)
+				if (paramValueM && verrTimer >= 30)
 				{
 					verrTimer = verrTimer - 30;
 				}
-				else if (paramValueP && verrTimer <= 300)
+				else if (paramValueP && verrTimer <= 180)
 				{
 					verrTimer = verrTimer + 30;
 				}
