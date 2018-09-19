@@ -26,6 +26,7 @@ void Menu::StartMenu(int buzzer) {
 	displayMenu.setTextSize(1);
 	displayMenu.setTextColor(WHITE);
 	displayMenu.setCursor(20, 12);
+	displayMenu.setRotation(2);
 	displayMenu.print("Hello Soldier !");
 	displayMenu.display();
 	delay(3000);

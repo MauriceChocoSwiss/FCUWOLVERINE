@@ -24,10 +24,10 @@ int reloadLEDBlue = 5;
 int solenoid = 8;
 int buzzer = 13;
 
-int joyB = 10;
-int joyG = 9;
-int joyH = 12;
-int joyD = 11; 
+int joyB = 12;
+int joyG = 11;
+int joyH = 10;
+int joyD = 9; 
 int joyPush = A0;
 int chargingHandle = A7;
 int BatteryRead = A1;
@@ -506,7 +506,7 @@ void loop() {
 		}
 	}
 
-	if (joyPushed >= 1020)
+	if (joyPushed >= 1010)
 	{
 		if (enterPressed)
 		{
@@ -559,7 +559,7 @@ void loop() {
 				{
 					ROFFull = ROFFull - 1;
 				}
-				else if (paramValueP  && ROFFull <= 34)
+				else if (paramValueP  && ROFFull <= 44)
 				{
 					ROFFull = ROFFull + 1;
 				}
@@ -583,7 +583,7 @@ void loop() {
 				{
 					ROF = ROF - 1;
 				}
-				else if (paramValueP && ROF <= 34)
+				else if (paramValueP && ROF <= 44)
 				{
 					ROF = ROF + 1;
 				}
@@ -1000,11 +1000,11 @@ void loop() {
 			{
 				//modification de valeur
 
-				if (paramValueM && dwel >= 26)
+				if (paramValueM && dwel >= 16)
 				{
 					dwel = dwel - 1;
 				}
-				else if (paramValueP && dwel <= 109)
+				else if (paramValueP && dwel <= 99)
 				{
 					dwel = dwel + 1;
 				}
