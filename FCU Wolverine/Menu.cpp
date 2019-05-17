@@ -15,11 +15,6 @@ Menu::Menu() {
 void Menu::StartMenu(int buzzer) {
 	displayMenu.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D (for the 128x64) 
 													
-	// draw a single pixel // Dessine un pixel blanc aux coordonnées 10,10
-
-	//display.drawPixel(10, 10, WHITE);
-	//display.display();
-	//delay(2000);
 	displayMenu.clearDisplay();
 
 	// text display tests

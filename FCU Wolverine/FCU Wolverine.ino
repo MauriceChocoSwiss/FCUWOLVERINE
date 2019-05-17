@@ -1,5 +1,4 @@
 #include "Alarm.h"
-#include "MenuValue.h"
 #include "Menu.h"
 #include "VoltageCtrl.h"
 #include <gfxfont.h>
@@ -27,7 +26,7 @@ int buzzer = 13;
 int joyB = 12;
 int joyG = 11;
 int joyH = 10;
-int joyD = 9; 
+int joyD = 9;
 int joyPush = A0;
 int chargingHandle = A7;
 int BatteryRead = A1;
@@ -63,6 +62,11 @@ bool paramValueM = false;
 int bbtire = 0;
 long temps;
 long tempsDever;
+unsigned long previousMillis1 = 0;
+unsigned long previousMillis2 = 0;
+unsigned long previousMillis3 = 0;
+
+
 
 //definition des options
 bool chargerOption;
@@ -77,6 +81,7 @@ bool alarmBatOption;
 
 //etat
 bool triggerStateFired = false;
+bool sniperBlocked = false;
 bool chargerState = false;
 bool blocageState = false;
 bool alarmLowPassed = false;
@@ -106,7 +111,8 @@ int dwelAdress = 23; //3
 int verEcranOptionAdress = 26; //1
 int alarmBatAdress = 27; //1
 int semiModeAdress = 28;//2
-int fullModeAdress = 30;//2
+int fullModeAdress = 30;//
+
 
 //déclaration des classes
 SelectorOnSemi semi;
@@ -118,6 +124,9 @@ Menu menu;
 Alarm alarm;
 
 void setup() {
+
+	Serial.begin(9600);
+
 	pinMode(joyB, INPUT);
 	pinMode(joyG, INPUT);
 	pinMode(joyH, INPUT);
@@ -138,6 +147,9 @@ void setup() {
 	digitalWrite(reloadLEDGreen, 0);
 	digitalWrite(reloadLEDBlue, 0);
 	digitalWrite(reloadLEDRed, 0);
+
+	EEPROM.put(fullModeAdress, 2);
+	//EEPROM.put(dwelAdress, 40);
 
 	//lecture des settings de l'eeprom
 	EEPROM.get(ROFFullAdress, ROFFull);
@@ -161,11 +173,35 @@ void setup() {
 	EEPROM.get(greenLightHandleAdress, greenLightChargingHandleOption);
 	EEPROM.get(alarmBatAdress, alarmBatOption);
 
+
+	Serial.println(ROFFull); //RofFull
+	delay(500);
+	Serial.println(ROF); delay(500); //"Rof : " +
+	Serial.println(burstBB); delay(500);//"Burst BB : " + 
+	Serial.println(bbrestChargeurValue); delay(500); //"bb rest Chargeur : " + 
+	Serial.println(bbrest); delay(500);//"bb rest : " + 
+	Serial.println(alarmBB); delay(500);
+	Serial.println(semiMode); delay(500);
+	Serial.println(fullMode); delay(500);
+	Serial.println(timeBolt); delay(500);
+	Serial.println(dwel); delay(500);
+	Serial.println(verrTimer); delay(500);
+	Serial.println(chargerOption); delay(500);
+	Serial.println(handleOption); delay(500);
+	Serial.println(buzzOption); delay(500);
+	Serial.println(blocageVideOption); delay(500);
+	Serial.println(alarmBBOption); delay(500);
+	Serial.println(verEcranOption); delay(500);
+	Serial.println(SnipeReady); delay(500);
+	Serial.println(greenLightChargingHandleOption); delay(500);
+	Serial.println(alarmBatOption); delay(500);
+
 	menu.StartMenu(buzzer);
 	temps = millis();
 }
 
 void loop() {
+	unsigned long CurrentMillis = millis();
 
 	double voltValue = voltCtrl.VoltageValue(BatteryRead);
 	triggerSwitch = digitalRead(trigger);
@@ -238,7 +274,6 @@ void loop() {
 				bbtire = bbtire + 1;
 
 				triggerStateFired = true;
-
 				break;
 			case 2:
 				triggerStateFired = burst.selectorBurst(solenoid, dwel, ROF, burstBB);
@@ -256,22 +291,33 @@ void loop() {
 
 				break;
 			case 4:
-				semi.selectorSemi(solenoid, dwel);
+				if (!sniperBlocked) {
+					semi.selectorSemi(solenoid, dwel);
 
-				bbrest = bbrest - 1;
-				bbtire = bbtire + 1;
+					bbrest = bbrest - 1;
+					bbtire = bbtire + 1;
+
+					previousMillis1 = millis();
+				}
 
 				triggerStateFired = true;
+				sniperBlocked = true;
 
-				delay(timeBolt * 1000);
+				int delay = timeBolt * 1000;
 
-				if (SnipeReady) {
-					armed.armed(reloadLEDGreen);
+				if (CurrentMillis - previousMillis1 >= delay)
+				{
+					sniperBlocked = false;
+
+					if (SnipeReady) {
+						armed.armed(reloadLEDGreen);
+					}
 				}
 
 				break;
 			}
 		}
+
 		//selecteur sur FULL
 		else if (selectorSwitch == HIGH)
 		{
@@ -279,10 +325,11 @@ void loop() {
 			case 1:
 				semi.selectorSemi(solenoid, dwel);
 
-				bbrest = bbrest - 1;
-				bbtire = bbtire + 1;
+					bbrest = bbrest - 1;
+					bbtire = bbtire + 1;
 
-				triggerStateFired = true;
+					triggerStateFired = true;
+				
 
 				break;
 			case 2:
@@ -300,20 +347,28 @@ void loop() {
 
 				break;
 			case 4:
-				semi.selectorSemi(solenoid, dwel);
+				if (!sniperBlocked) {
+					semi.selectorSemi(solenoid, dwel);
 
-				bbrest = bbrest - 1;
-				bbtire = bbtire + 1;
+					bbrest = bbrest - 1;
+					bbtire = bbtire + 1;
 
-				triggerStateFired = true;
-
-				delay(timeBolt * 1000);
-
-				if (SnipeReady) {
-					armed.armed(reloadLEDGreen);
+					previousMillis1 = millis();
 				}
 
-				break;
+				triggerStateFired = true;
+				sniperBlocked = true;
+
+				int delay = timeBolt * 1000;
+
+				if (CurrentMillis - previousMillis1 >= delay)
+				{
+					sniperBlocked = false;
+
+					if (SnipeReady) {
+						armed.armed(reloadLEDGreen);
+					}
+				}
 			}
 		}
 
@@ -364,7 +419,7 @@ void loop() {
 			if (greenLightChargingHandleOption) {
 				armed.armed(reloadLEDGreen);
 			}
-			
+
 			bbrest = bbrestChargeurValue;
 		}
 	}
@@ -398,15 +453,20 @@ void loop() {
 		if ((millis() - temps) > vertime && ecranVerr == false)
 		{
 			ecranVerr = true;
-			menu.MenuVer();
-			delay(1500);
+
+			if (CurrentMillis - temps <= 1500)
+			{
+				menu.MenuVer();
+			}
 		}
 
 		if ((millis() - tempsDever) > 4000 && appuieLong)
 		{
 			ecranVerr = false;
-			menu.MenuDever();
-			delay(1500);
+			if (CurrentMillis - tempsDever <= 1500)
+			{
+				menu.MenuDever();
+			}
 		}
 	}
 
@@ -436,10 +496,7 @@ void loop() {
 		{
 			if (enterPressed)
 			{
-				if (enterPressed)
-				{
-					paramValueM = true;
-				}
+				paramValueM = true;
 			}
 			else {
 				sousMenuValue = 0;
@@ -452,8 +509,10 @@ void loop() {
 				{
 					menuValue = menuValue - 1;
 				}
+
 				temps = millis();
 			}
+
 			delay(200);
 		}
 
@@ -506,7 +565,7 @@ void loop() {
 		}
 	}
 
-	if (joyPushed >= 1010)
+	if (joyPushed >= 1005)
 	{
 		if (enterPressed)
 		{
@@ -538,7 +597,7 @@ void loop() {
 
 	if (joyPushed <= 900 && appuieLong == true)
 	{
-		appuieLong = false;	
+		appuieLong = false;
 	}
 
 	//affichage du menu
@@ -624,7 +683,7 @@ void loop() {
 		break;
 	case 2:
 		menu.MenuSniper(timeBolt, SnipeReady, sousMenuValue);
-		
+
 		if (sousMenuValue == 0)
 		{
 			if (enterPressed)
@@ -675,14 +734,14 @@ void loop() {
 		break;
 	case 3:
 		menu.MenuChargeur1(bbrestChargeurValue, chargerOption, buzzOption, blocageVideOption, sousMenuValue);
-		
+
 		if (sousMenuValue == 0)
 		{
 			if (enterPressed)
 			{
 				//modification de valeur
 
-				if (paramValueM && bbrestChargeurValue >=1)
+				if (paramValueM && bbrestChargeurValue >= 1)
 				{
 					bbrestChargeurValue = bbrestChargeurValue - 1;
 				}
@@ -773,7 +832,7 @@ void loop() {
 		break;
 	case 4:
 		menu.MenuChargeur2(alarmBBOption, alarmBB, handleOption, greenLightChargingHandleOption, sousMenuValue);
-		
+
 		if (sousMenuValue == 0)
 		{
 			if (enterPressed)
@@ -871,7 +930,7 @@ void loop() {
 		break;
 	case 5:
 		menu.MenuSetting(verrTimer, verEcranOption, alarmBatOption, sousMenuValue);
-		
+
 		if (sousMenuValue == 0)
 		{
 			if (enterPressed)
@@ -946,7 +1005,7 @@ void loop() {
 		break;
 	case 6:
 		menu.MenuSetting2(semiMode, fullMode, dwel, sousMenuValue);
-		
+
 		if (sousMenuValue == 0)
 		{
 			if (enterPressed)
