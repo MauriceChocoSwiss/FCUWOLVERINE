@@ -11,19 +11,19 @@ Menu principal ->
 
   -En haut à gauche: billes restantes dans le chargeur et nombre de billes théorique du chargeur.
   
-  -En haut à droite: compteur total de billes tirés depuis la mise sous tension.
+  -En haut à droite: compteur total de billes tirées depuis la mise sous tension.
   
   -En bas à gauche: mode de tir. Pour le Burst, le nombre représente le nombre tiré pendant la rafale.
   
-  -En bas à droit: Tension de la b atterie.
+  -En bas à droit: Tension de la batterie.
 
 Les menus seront ensuite expliqués dans le cas ou vous actionnez le joystick vers le haut.
 
 Menu Burst -> 
 
-  -En haut à gauche: Rate of fire en mode full, valeur bloquée à 35 max (nbr de billes par secondes).
+  -En haut à gauche: Rate of fire en mode full, valeur bloquée à 35 max (nbr de billes par seconde).
   
-  -En bas à gauche: Rate of fire en mode Burst(rafale), valeur bloquée à 35 max (nbr de billes par secondes).
+  -En bas à gauche: Rate of fire en mode Burst(rafale), valeur bloquée à 35 max (nbr de billes par seconde).
   
   -En bas à droite: Nombre de billes de la rafale.
 
@@ -58,7 +58,7 @@ MenuSettings ->
   
   -En haut à gauche: Activation du verouillage d'écran -> délai de dévérouillage : 3 secs.
   
-  -En haut à droite: Delai d'extinction en secondes, avance de 3à sec en 30 sec.
+  -En haut à droite: Delai d'extinction en secondes, avance de 30sec. en 30sec.
   
   -En bas à gauche: Activation de l'alarme tension batterie et blocage des tirs.
   
