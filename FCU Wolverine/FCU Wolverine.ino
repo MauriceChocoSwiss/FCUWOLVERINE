@@ -1059,7 +1059,7 @@ void loop() {
 			{
 				//modification de valeur
 
-				if (paramValueM && dwel >= 16)
+				if (paramValueM && dwel >= 0)
 				{
 					dwel = dwel - 1;
 				}
