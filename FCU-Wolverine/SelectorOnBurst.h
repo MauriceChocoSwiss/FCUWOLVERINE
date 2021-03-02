@@ -12,4 +12,3 @@ class SelectorOnBurst{
 };
 
 #endif
-
