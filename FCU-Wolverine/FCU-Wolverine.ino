@@ -141,7 +141,7 @@ void setup() {
 	digitalWrite(reloadLEDRed, 0);
 
 //	EEPROM.put(ROFFullAdress, 15);
-  EEPROM.put(fullModeAdress, 3);
+//  EEPROM.put(fullModeAdress, 3);
 //	EEPROM.put(dwelAdress, 12);
 
 	//lecture des settings de l'eeprom
@@ -165,7 +165,6 @@ void setup() {
 	EEPROM.get(SnipeReadyAdress, SnipeReady);
 	EEPROM.get(greenLightHandleAdress, greenLightChargingHandleOption);
 	EEPROM.get(alarmBatAdress, alarmBatOption);
-
 
 	Serial.println(ROFFull); delay(100);
 	Serial.println(ROF); delay(100); //"Rof : " +
@@ -304,7 +303,6 @@ void loop() {
 						armed.armed(reloadLEDGreen);
 					}
 				}
-
 				break;
 			}
 		}
