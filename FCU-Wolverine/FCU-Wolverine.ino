@@ -1050,7 +1050,7 @@ void loop() {
 				{
 					dwel = dwel - 1;
 				}
-				else if (paramValueP && dwel <= 99)
+				else if (paramValueP && dwel <= 199)
 				{
 					dwel = dwel + 1;
 				}
