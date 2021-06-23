@@ -10,7 +10,6 @@ SelectorOnBurst::SelectorOnBurst()
 
 bool SelectorOnBurst::selectorBurst(int pin, int dwel, int rof, int repeat)
 {
-  Serial.println(repeat);
     for (int x = 1; x <= repeat; x++) {
 
         digitalWrite(pin, 1);
@@ -19,9 +18,7 @@ bool SelectorOnBurst::selectorBurst(int pin, int dwel, int rof, int repeat)
 
         digitalWrite(pin, 0);
 
-        delay(1000 / rof);
-
-        Serial.println("fire");
+        delay(1000 / rof);       
     }
 
 	return true;

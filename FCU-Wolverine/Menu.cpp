@@ -80,7 +80,6 @@ void Menu::MenuFullBurst(int ROFFull, int ROFBurst, int QteBB,int sousMenuValue)
 	{
 		displayMenu.print(">");
 	}
- displayMenu.print(">");
 	displayMenu.setCursor(80, 32);
 	displayMenu.print("Qte BB:");
 	displayMenu.print(QteBB);

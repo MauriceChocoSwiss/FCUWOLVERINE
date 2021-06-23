@@ -166,26 +166,26 @@ void setup() {
 	EEPROM.get(greenLightHandleAdress, greenLightChargingHandleOption);
 	EEPROM.get(alarmBatAdress, alarmBatOption);
 
-	Serial.println(ROFFull); delay(100);
-	Serial.println(ROF); delay(100); //"Rof : " +
-	Serial.println(burstBB); delay(100);//"Burst BB : " + 
-	Serial.println(bbrestChargeurValue); delay(100); //"bb rest Chargeur : " + 
-	Serial.println(bbrest); delay(100);//"bb rest : " + 
-	Serial.println(alarmBB); delay(100);
-	Serial.println(semiMode); delay(100);
-	Serial.println(fullMode); delay(100);
-	Serial.println(timeBolt); delay(100);
-	Serial.println(dwel); delay(100);
-	Serial.println(verrTimer); delay(100);
-	Serial.println(chargerOption); delay(100);
-	Serial.println(handleOption); delay(100);
-	Serial.println(buzzOption); delay(100);
-	Serial.println(blocageVideOption); delay(100);
-	Serial.println(alarmBBOption); delay(100);
-	Serial.println(verEcranOption); delay(100);
-	Serial.println(SnipeReady); delay(100);
-	Serial.println(greenLightChargingHandleOption); delay(100);
-	Serial.println(alarmBatOption); delay(100);
+//	Serial.println(ROFFull); delay(100);
+//	Serial.println(ROF); delay(100); //"Rof : " +
+//	Serial.println(burstBB); delay(100);//"Burst BB : " + 
+//	Serial.println(bbrestChargeurValue); delay(100); //"bb rest Chargeur : " + 
+//	Serial.println(bbrest); delay(100);//"bb rest : " + 
+//	Serial.println(alarmBB); delay(100);
+//	Serial.println(semiMode); delay(100);
+//	Serial.println(fullMode); delay(100);
+//	Serial.println(timeBolt); delay(100);
+//	Serial.println(dwel); delay(100);
+//	Serial.println(verrTimer); delay(100);
+//	Serial.println(chargerOption); delay(100);
+//	Serial.println(handleOption); delay(100);
+//	Serial.println(buzzOption); delay(100);
+//	Serial.println(blocageVideOption); delay(100);
+//	Serial.println(alarmBBOption); delay(100);
+//	Serial.println(verEcranOption); delay(100);
+//	Serial.println(SnipeReady); delay(100);
+//	Serial.println(greenLightChargingHandleOption); delay(100);
+//	Serial.println(alarmBatOption); delay(100);
 
 	menu.StartMenu(buzzer);
 	lastTempVerrouilage = currentTime;
