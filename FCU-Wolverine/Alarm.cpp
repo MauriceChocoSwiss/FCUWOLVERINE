@@ -11,8 +11,8 @@ Alarm::Alarm() {
 bool Alarm::AlarmEmpty(int pin)
 {
 	digitalWrite(pin, 1);
-	delay(150);
-	digitalWrite(pin, 0);
+//	delay(150);
+//	digitalWrite(pin, 0);
 
 	return true;
 }
@@ -20,8 +20,8 @@ bool Alarm::AlarmEmpty(int pin)
 bool Alarm::AlarmLowBB(int pin)
 {
 	digitalWrite(pin, 1);
-	delay(150);
-	digitalWrite(pin, 0);
+//	delay(150);
+//	digitalWrite(pin, 0);
 
 	return true;
 }
