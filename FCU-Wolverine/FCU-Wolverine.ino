@@ -192,6 +192,7 @@ void setup() {
 }
 
 void loop() {
+	testtir: //etape pour by-pass la partie du code non necessaire au tir
 	currentTime = millis();
 
 	double voltValue = voltCtrl.VoltageValue(BatteryRead);;
@@ -416,7 +417,7 @@ void loop() {
 	if (alarmBBOption == true)
 	{
 		//Alarme "Plus de billes"
-		if (bbrest <= 0 && alarmEmptyPassed == false)
+		if (bbrest <= 0)
 		{
 			alarmEmptyPassed = alarm.AlarmEmpty(reloadLEDRed);
 
@@ -425,12 +426,27 @@ void loop() {
 				alarm.BuzzerLow(buzzer);
 			}
 		}
+		else
+                {
+                  alarmEmptyPassed = false;
+                  alarmLowPassed = false;
+                  digitalWrite(reloadLEDGreen, 0);
+                  digitalWrite(reloadLEDBlue, 0);
+                  digitalWrite(reloadLEDRed, 0);
+                }
 
 		//Alarme "Presque plus de billes"
-		if (bbrest <= alarmBB && alarmLowPassed == false)
+		if (bbrest <= alarmBB)
 		{
 			alarmLowPassed = alarm.AlarmLowBB(reloadLEDBlue);
 		}
+		else
+                {
+                  alarmLowPassed = false;
+                  digitalWrite(reloadLEDGreen, 0);
+                  digitalWrite(reloadLEDBlue, 0);
+                  digitalWrite(reloadLEDRed, 0);
+                }
 	}
 
 	//verrouillage de l'�cran
@@ -476,11 +492,16 @@ void loop() {
 			alarmBatLow = false;
 		}
 	}
+	
+	if (triggerSwitch == HIGH) { //test la queue de detente pour by-pass la suite du code
+          goto testtir; //retourne au debut du code
+	}
 
 	//lecture du JoyStick
 	if (ecranVerr == false) {
 		if (joyBPush == HIGH)
 		{
+			digitalWrite(reloadLEDGreen,1); //allume la LED verte
 			if (enterPressed)
 			{
 				paramValueM = true;
@@ -501,10 +522,12 @@ void loop() {
 			}
 
 			delay(200);
+			digitalWrite(reloadLEDGreen,0); //eteind la LED verte
 		}
 
 		if (joyHPush == HIGH)
 		{
+			digitalWrite(reloadLEDGreen,1); //allume la LED verte
 			if (enterPressed)
 			{
 				paramValueP = true;
@@ -525,10 +548,12 @@ void loop() {
 			lastTempVerrouilage = currentTime;
 
 			delay(200);
+			digitalWrite(reloadLEDGreen,0); //eteind la LED verte
 		}
 
 		if (joyDPush == HIGH && enterPressed == false)
 		{
+			digitalWrite(reloadLEDGreen,1); //allume la LED verte
 			if (sousMenuValue < 3)
 			{
 				sousMenuValue = sousMenuValue + 1;
@@ -537,10 +562,12 @@ void loop() {
 			lastTempVerrouilage = currentTime;
 
 			delay(200);
+			digitalWrite(reloadLEDGreen,0); //eteind la LED verte
 		}
 
 		if (joyGPush == HIGH && enterPressed == false)
 		{
+			digitalWrite(reloadLEDGreen,1); //allume la LED verte
 			if (sousMenuValue > 0)
 			{
 				sousMenuValue = sousMenuValue - 1;
@@ -549,11 +576,13 @@ void loop() {
 			lastTempVerrouilage = currentTime;
 
 			delay(200);
+			digitalWrite(reloadLEDGreen,0); //eteind la LED verte
 		}
 	}
 
 	if (joyPushed >= 1005)
 	{
+		digitalWrite(reloadLEDGreen,1); //allume la LED verte
 		if (enterPressed)
 		{
 			enterPressed = false;
@@ -580,6 +609,7 @@ void loop() {
 		}
 
 		delay(100);
+		digitalWrite(reloadLEDGreen,0); //eteind la LED verte
 	}
 
 	if (joyPushed <= 900 && appuieLong == true)
