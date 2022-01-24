@@ -429,9 +429,6 @@ void loop() {
 		else
                 {
                   alarmEmptyPassed = false;
-                  alarmLowPassed = false;
-                  digitalWrite(reloadLEDGreen, 0);
-                  digitalWrite(reloadLEDBlue, 0);
                   digitalWrite(reloadLEDRed, 0);
                 }
 
@@ -443,9 +440,7 @@ void loop() {
 		else
                 {
                   alarmLowPassed = false;
-                  digitalWrite(reloadLEDGreen, 0);
                   digitalWrite(reloadLEDBlue, 0);
-                  digitalWrite(reloadLEDRed, 0);
                 }
 	}
 
