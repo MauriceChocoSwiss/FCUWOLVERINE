@@ -192,7 +192,7 @@ void setup() {
 }
 
 void loop() {
-	testtir: //etape pour by-pass la partie du code non necessaire au tir
+	shoot: //etape pour by-pass la partie du code non necessaire au tir
 	currentTime = millis();
 
 	double voltValue = voltCtrl.VoltageValue(BatteryRead);;
@@ -428,7 +428,6 @@ void loop() {
 		}
 		else
                 {
-                  alarmEmptyPassed = false;
                   digitalWrite(reloadLEDRed, 0);
                 }
 
@@ -439,7 +438,6 @@ void loop() {
 		}
 		else
                 {
-                  alarmLowPassed = false;
                   digitalWrite(reloadLEDBlue, 0);
                 }
 	}
@@ -489,7 +487,7 @@ void loop() {
 	}
 	
 	if (triggerSwitch == HIGH) { //test la queue de detente pour by-pass la suite du code
-          goto testtir; //retourne au debut du code
+          goto shoot; //retourne au debut du code
 	}
 
 	//lecture du JoyStick
