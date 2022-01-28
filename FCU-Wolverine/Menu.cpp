@@ -9,7 +9,7 @@ U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C displayMenu(U8G2_R2);
 Menu::Menu() {
 }
 
-void Menu::StartMenu(int buzzer) {
+void Menu::StartMenu(int8_t buzzer) {
 	displayMenu.begin();  // initialize with the I2C addr 0x3D (for the 128x64) 
   
 	displayMenu.setFont(u8g2_font_6x10_mr);
@@ -34,7 +34,7 @@ void Menu::StartMenu(int buzzer) {
 
 }
 
-void Menu::MainDisplay(double voltValue, int bbrest, int bbrestChargeur, String modeValue, int bbtire)
+void Menu::MainDisplay(double voltValue, int8_t bbrest, int8_t bbrestChargeur, String modeValue, int8_t bbtire)
 {
   displayMenu.clearBuffer();
 	displayMenu.setCursor(0, 8);
@@ -55,7 +55,7 @@ void Menu::MainDisplay(double voltValue, int bbrest, int bbrestChargeur, String 
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuFullBurst(int ROFFull, int ROFBurst, int QteBB,int sousMenuValue)
+void Menu::MenuFullBurst(int8_t ROFFull, int8_t ROFBurst, int8_t QteBB,int8_t sousMenuValue)
 {
   displayMenu.clearBuffer();
 	displayMenu.setCursor(0, 8);
@@ -86,7 +86,7 @@ void Menu::MenuFullBurst(int ROFFull, int ROFBurst, int QteBB,int sousMenuValue)
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuSniper(int timeBolt, bool greenLed, int sousMenuValue)
+void Menu::MenuSniper(int8_t timeBolt, bool greenLed, int8_t sousMenuValue)
 {
 	displayMenu.clearBuffer();
 
@@ -110,7 +110,7 @@ void Menu::MenuSniper(int timeBolt, bool greenLed, int sousMenuValue)
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuChargeur1(int chargeurCap, bool switchchargeur, bool buzzer, bool blocage, int sousMenuValue)
+void Menu::MenuChargeur1(int8_t chargeurCap, bool switchchargeur, bool buzzer, bool blocage, int8_t sousMenuValue)
 {
 	displayMenu.clearBuffer();
 
@@ -155,7 +155,7 @@ void Menu::MenuChargeur1(int chargeurCap, bool switchchargeur, bool buzzer, bool
   displayMenu.sendBuffer();
 }
 
-void Menu::MenuChargeur2(bool alarm, int alarmLowBB, bool chargingHandle, bool greenLight, int sousMenuValue)
+void Menu::MenuChargeur2(bool alarm, int8_t alarmLowBB, bool chargingHandle, bool greenLight, int8_t sousMenuValue)
 {
 	displayMenu.clearBuffer();
 
@@ -199,7 +199,7 @@ void Menu::MenuChargeur2(bool alarm, int alarmLowBB, bool chargingHandle, bool g
 displayMenu.sendBuffer();
 }
 
-void Menu::MenuSetting(int veille, bool verrou, bool LowBat, int sousMenuValue)
+void Menu::MenuSetting(int8_t veille, bool verrou, bool LowBat, int8_t sousMenuValue)
 {
 	displayMenu.clearBuffer();
 	
@@ -233,7 +233,7 @@ void Menu::MenuSetting(int veille, bool verrou, bool LowBat, int sousMenuValue)
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuSetting2(int semi, int full, int dwel, int sousMenuValue)
+void Menu::MenuSetting2(int8_t semi, int8_t full, int8_t dwel, int8_t sousMenuValue)
 {
 	displayMenu.clearBuffer();
 

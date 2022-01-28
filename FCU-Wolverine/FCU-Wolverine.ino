@@ -1,66 +1,62 @@
 #include "Alarm.h"
 #include "Menu.h"
 #include "VoltageCtrl.h"
-#include "SelectorOnBurst.h"
-#include "SelectorOnFull.h"
-#include "SelectorOnSemi.h"
-#include "armed.h"
-#include <Wire.h>
+#include "Firing.h"
 #include <EEPROM.h>
 
-//assignement des pin
-int trigger = 2;
-int selector = 3;
-int charger = 4;
-int reloadLEDRed = 7;
-int reloadLEDGreen = 6;
-int reloadLEDBlue = 5;
-int solenoid = 8;
-int buzzer = 13;
+//pin assignment
+int8_t trigger = 2;
+int8_t selector = 3;
+int8_t charger = 4;
+int8_t reloadLEDRed = 7;
+int8_t reloadLEDGreen = 6;
+int8_t reloadLEDBlue = 5;
+int8_t solenoid = 8;
+int8_t buzzer = 13;
 
-int joyB = 12;
-int joyG = 11;
-int joyH = 10;
-int joyD = 9;
-int joyPush = A0;
-int chargingHandle = A7;
-int BatteryRead = A1;
+int8_t joyB = 12;
+int8_t joyG = 11;
+int8_t joyH = 10;
+int8_t joyD = 9;
+int8_t joyPush = A0;
+int8_t chargingHandle = A7;
+int8_t BatteryRead = A1;
 
-//mise des �tats des switchs a zero
-int triggerSwitch = 0;
-int selectorSwitch = 0;
-int chargerSwitch = 0;
-int handleSwitch = 0;
-int joyBPush = 0;
-int joyGPush = 0;
-int joyHPush = 0;
-int joyDPush = 0;
-int joyPushed = 0;
+//set switch states to 0
+int8_t triggerSwitch = 0;
+int8_t selectorSwitch = 0;
+int8_t chargerSwitch = 0;
+int8_t handleSwitch = 0;
+int8_t joyBPush = 0;
+int8_t joyGPush = 0;
+int8_t joyHPush = 0;
+int8_t joyDPush = 0;
+int8_t joyPushed = 0;
 
-//d�claration des variables locales
-int bbrestChargeurValue;
-int bbrest;
-int alarmBB;
-int ROFFull;
-int ROF;
-int burstBB;
-int semiMode;
-int fullMode;
-int timeBolt;
-int dwel;
-int verrTimer;
+//local variables
+int8_t bbrestChargeurValue;
+int8_t bbrest;
+int8_t alarmBB;
+int8_t ROFFull;
+int8_t ROF;
+int8_t burstBB;
+int8_t semiMode;
+int8_t fullMode;
+int8_t timeBolt;
+int8_t dwel;
+int8_t verrTimer;
 String modeValue;
-int menuValue = 0;
-int sousMenuValue = 0;
-bool paramValueP = false;
-bool paramValueM = false;
-int bbtire = 0;
+int8_t menuValue = 0;
+int8_t sousMenuValue = 0;
+bool paramValuePlus = false;
+bool paramValueMoins = false;
+int8_t bbtire = 0;
 long lastTempVerrouilage;
 long tempsDever;
-unsigned long previousMillis1 = 0;
+unsigned long previousMillisBolt = 0;
 unsigned long currentTime;
 
-//definition des options
+//options
 bool chargerOption;
 bool handleOption;
 bool buzzOption;
@@ -71,7 +67,7 @@ bool SnipeReady;
 bool greenLightChargingHandleOption;
 bool alarmBatOption;
 
-//etat
+//states
 bool triggerStateFired = false;
 bool sniperBlocked = false;
 bool chargerState = false;
@@ -84,36 +80,33 @@ bool alarmBatLow = false;
 bool ecranVerr = false;
 bool appuieLong = false;
 
-//d�claratgion des adresse des parametre dans l'eeprom
-int ROFFullAdress = 0; //2
-int ROFBurstAdress = 2; //2
-int burstBBAdress = 4; //2
-int SnipeReadyAdress = 6; //1
-int timeBoltAdress = 7; //2
-int bbrestAdress = 9; //3
-int chargerOptionAdress = 12; //1
-int buzzOptionAdress = 13; //1
-int blocageVideAdress = 14; //1
-int alarmBBOptionAdress = 15; //1
-int alarmBBAdress = 16; //2
-int handleOptionAdress = 18; //1
-int greenLightHandleAdress = 19; //1
-int verrTimerAdress = 20; //3
-int dwelAdress = 23; //3
-int verEcranOptionAdress = 26; //1
-int alarmBatAdress = 27; //1
-int semiModeAdress = 28;//2
-int fullModeAdress = 30;//
+//Eeprom Addresses
+int8_t ROFFullAdress = 0; //2
+int8_t ROFBurstAdress = 2; //2
+int8_t burstBBAdress = 4; //2
+int8_t SnipeReadyAdress = 6; //1
+int8_t timeBoltAdress = 7; //2
+int8_t bbrestAdress = 9; //3
+int8_t chargerOptionAdress = 12; //1
+int8_t buzzOptionAdress = 13; //1
+int8_t blocageVideAdress = 14; //1
+int8_t alarmBBOptionAdress = 15; //1
+int8_t alarmBBAdress = 16; //2
+int8_t handleOptionAdress = 18; //1
+int8_t greenLightHandleAdress = 19; //1
+int8_t verrTimerAdress = 20; //3
+int8_t dwelAdress = 23; //3
+int8_t verEcranOptionAdress = 26; //1
+int8_t alarmBatAdress = 27; //1
+int8_t semiModeAdress = 28;//2
+int8_t fullModeAdress = 30;//
 
 
-//d�claration des classes
-SelectorOnSemi semi;
-Armed armed;
-SelectorOnFull full;
-SelectorOnBurst burst;
+//Class
 VoltageCtrl voltCtrl;
 Menu menu;
 Alarm alarm;
+Firing firing;
 
 void setup() {
 
@@ -140,11 +133,7 @@ void setup() {
 	digitalWrite(reloadLEDBlue, 0);
 	digitalWrite(reloadLEDRed, 0);
 
-//	EEPROM.put(ROFFullAdress, 15);
-//  EEPROM.put(fullModeAdress, 3);
-//	EEPROM.put(dwelAdress, 12);
-
-	//lecture des settings de l'eeprom
+	//Reading Eeprom Settings
 	EEPROM.get(ROFFullAdress, ROFFull);
 	EEPROM.get(ROFBurstAdress, ROF);
 	EEPROM.get(burstBBAdress, burstBB);
@@ -166,32 +155,12 @@ void setup() {
 	EEPROM.get(greenLightHandleAdress, greenLightChargingHandleOption);
 	EEPROM.get(alarmBatAdress, alarmBatOption);
 
-//	Serial.println(ROFFull); delay(100);
-//	Serial.println(ROF); delay(100); //"Rof : " +
-//	Serial.println(burstBB); delay(100);//"Burst BB : " + 
-//	Serial.println(bbrestChargeurValue); delay(100); //"bb rest Chargeur : " + 
-//	Serial.println(bbrest); delay(100);//"bb rest : " + 
-//	Serial.println(alarmBB); delay(100);
-//	Serial.println(semiMode); delay(100);
-//	Serial.println(fullMode); delay(100);
-//	Serial.println(timeBolt); delay(100);
-//	Serial.println(dwel); delay(100);
-//	Serial.println(verrTimer); delay(100);
-//	Serial.println(chargerOption); delay(100);
-//	Serial.println(handleOption); delay(100);
-//	Serial.println(buzzOption); delay(100);
-//	Serial.println(blocageVideOption); delay(100);
-//	Serial.println(alarmBBOption); delay(100);
-//	Serial.println(verEcranOption); delay(100);
-//	Serial.println(SnipeReady); delay(100);
-//	Serial.println(greenLightChargingHandleOption); delay(100);
-//	Serial.println(alarmBatOption); delay(100);
-
 	menu.StartMenu(buzzer);
 	lastTempVerrouilage = currentTime;
 }
 
 void loop() {
+shoot: //step to by-pass non essentials functions
 	currentTime = millis();
 
 	double voltValue = voltCtrl.VoltageValue(BatteryRead);;
@@ -205,171 +174,99 @@ void loop() {
 	joyHPush = digitalRead(joyH);
 	joyPushed = analogRead(joyPush);
 
-	//Affichage du mode de tir
-	//Selecteur sur FULL
-	if (selectorSwitch == HIGH)
-	{
-		switch (fullMode) {
-		case 1:
-			modeValue = "Semi";
+	//Fire mode displaying
+	switch (selectorSwitch == HIGH ? fullMode : semiMode) {
+	case 1:
+		modeValue = "Semi";
 
-			break;
-		case 2:
-			modeValue = "Burst " + String(burstBB);
+		break;
+	case 2:
+		modeValue = "Burst " + String(burstBB);
 
-			break;
-		case 3:
-			modeValue = "Full";
+		break;
+	case 3:
+		modeValue = "Full";
 
-			break;
-		case 4:
-			modeValue = "Sniper";
+		break;
+	case 4:
+		modeValue = "Sniper";
 
-			break;
-		}
-	}
-	//selecteur sur SEMI
-	else if (selectorSwitch == LOW)
-	{
-		switch (semiMode) {
-		case 1:
-			modeValue = "Semi";
-			break;
-		case 2:
-			modeValue = "Burst " + String(burstBB);
-
-			break;
-		case 3:
-			modeValue = "Full";
-
-			break;
-		case 4:
-			modeValue = "Sniper";
-
-			break;
-		}
+		break;
 	}
 
-
-	//Tir
+	//Firing
 	if (triggerSwitch == HIGH && triggerStateFired == false && chargerState == true && blocageState == false && alarmBatLow == false)
 	{
-		//Selecteur sur SEMI
-		if (selectorSwitch == LOW)
-		{
-			switch (semiMode) {
-			case 1:
-				semi.selectorSemi(solenoid, dwel);
+		switch (selectorSwitch == HIGH ? fullMode : semiMode) {
+		case 1:
+			firing.Fire(solenoid, dwel);
 
-				bbrest = bbrest - 1;
-				bbtire = bbtire + 1;
+			bbrest -= 1;
+			bbtire += 1;
 
-				triggerStateFired = true;
-				break;
-			case 2:
-				triggerStateFired = burst.selectorBurst(solenoid, dwel, ROF, burstBB);
+			triggerStateFired = true;
+			break;
+		case 2:
 
-				bbrest = bbrest - burstBB;
-				bbtire = bbtire + burstBB;
+			for (int8_t x = 1; x <= burstBB; x++) {
+				firing.Fire(solenoid, dwel);
 
-				break;
-			case 3:
-				full.selectorFull(solenoid, dwel, ROFFull);
-
-				bbrest = bbrest - 1;
-				bbtire = bbtire + 1;
-
-				break;
-			case 4:
-				if (!sniperBlocked) {
-					semi.selectorSemi(solenoid, dwel);
-
-					bbrest = bbrest - 1;
-					bbtire = bbtire + 1;
-
-					previousMillis1 = currentTime;
-				}
-
-				triggerStateFired = true;
-				sniperBlocked = true;
-
-				int delay = timeBolt * 250;
-
-				if (currentTime - previousMillis1 >= delay)
-				{
-					sniperBlocked = false;
-
-					if (SnipeReady) {
-						armed.armed(reloadLEDGreen);
-					}
-				}
-				break;
+				delay(1000 / ROFFull);
 			}
-		}
 
-//		//selecteur sur FULL
-		else if (selectorSwitch == HIGH)
-		{
-			switch (fullMode) {
-			case 1:
-  			semi.selectorSemi(solenoid, dwel);
+			bbrest -= burstBB;
+			bbtire += burstBB;
 
-				bbrest = bbrest - 1;
-				bbtire = bbtire + 1;
+			triggerStateFired = true;
 
-				triggerStateFired = true;
+			break;
+		case 3:
+			firing.Fire(solenoid, dwel);
+			delay(1000 / ROFFull);
 
-				break;
-			case 2:
-				triggerStateFired = burst.selectorBurst(solenoid, dwel, ROF, burstBB);
+			bbrest -= 1;
+			bbtire -= 1;
 
-				bbrest = bbrest - burstBB;
-				bbtire = bbtire + burstBB;
+			break;
+		case 4:
+			if (!sniperBlocked) {
+				firing.Fire(solenoid, dwel);
 
-				break;
-			case 3:
-				full.selectorFull(solenoid, dwel, ROFFull);
+				bbrest -= 1;
+				bbtire += 1;
 
-				bbrest = bbrest - 1;
-				bbtire = bbtire + 1;
+				previousMillisBolt = currentTime;
+			}
 
-				break;
-			case 4:
-				if (!sniperBlocked) {
-					semi.selectorSemi(solenoid, dwel);
+			triggerStateFired = true;
+			sniperBlocked = true;
 
-					bbrest = bbrest - 1;
-					bbtire = bbtire + 1;
+			int8_t delayBolt = timeBolt * 250;
 
-					previousMillis1 = currentTime;
-				}
+			if (currentTime - previousMillisBolt >= delayBolt)
+			{
+				sniperBlocked = false;
 
-				triggerStateFired = true;
-				sniperBlocked = true;
-
-				int delay = timeBolt * 250;
-
-				if (currentTime - previousMillis1 >= delay)
-				{
-					sniperBlocked = false;
-
-					if (SnipeReady) {
-						armed.armed(reloadLEDGreen);
-					}
+				if (SnipeReady) {
+					digitalWrite(reloadLEDGreen, 1);
+					delay(10);
+					digitalWrite(reloadLEDGreen, 0);
+					delay(800);
 				}
 			}
+			break;
 		}
 
 		menuValue = 0;
 	}
 
-	//Blocage des tirs pour le semi
+	//Fire blocking when semi
 	if (triggerSwitch == LOW && triggerStateFired == true)
 	{
 		triggerStateFired = false;
 	}
 
-	//Option relatives au chargeur
+	//Magazin Option
 	if (chargerOption == true)
 	{
 		if (chargerSwitch == HIGH)
@@ -385,7 +282,7 @@ void loop() {
 		chargerState = true;
 	}
 
-	//Option blocage si compteur a 0
+	//Empty mag option
 	if (blocageVideOption == true)
 	{
 		if (bbrest <= 0)
@@ -394,7 +291,7 @@ void loop() {
 		}
 	}
 
-	//Option Charging Handle
+	//Charging Handle Option
 	if (handleOption == true)
 	{
 		if (handleSwitch >= 1010)
@@ -405,17 +302,20 @@ void loop() {
 			blocageState = false;
 
 			if (greenLightChargingHandleOption) {
-				armed.armed(reloadLEDGreen);
+				digitalWrite(reloadLEDGreen, 1);
+				delay(10);
+				digitalWrite(reloadLEDGreen, 0);
+				delay(800);
 			}
 
 			bbrest = bbrestChargeurValue;
 		}
 	}
 
-	//Alarmes pour les billes
+	//BB's alarm
 	if (alarmBBOption == true)
 	{
-		//Alarme "Plus de billes"
+		//"Empty BB's" Alarm
 		if (bbrest <= 0 && alarmEmptyPassed == false)
 		{
 			alarmEmptyPassed = alarm.AlarmEmpty(reloadLEDRed);
@@ -426,17 +326,41 @@ void loop() {
 			}
 		}
 
-		//Alarme "Presque plus de billes"
+		//"Near Empty" bb's alarm
 		if (bbrest <= alarmBB && alarmLowPassed == false)
 		{
 			alarmLowPassed = alarm.AlarmLowBB(reloadLEDBlue);
 		}
 	}
 
-	//verrouillage de l'�cran
+	//Battery Voltage Alarm
+	if (alarmBatOption == true)
+	{
+		if (voltCtrl.alarmVoltage(BatteryRead, currentTime))
+		{
+			alarm.AlarmBat(reloadLEDRed);
+
+			alarmBatLow = true;
+
+			if (buzzOption == true)
+			{
+				alarm.BuzzerBat(buzzer);
+			}
+		}
+		else {
+			alarmBatLow = false;
+		}
+	}
+
+	//testing trigger test to by-pass
+	if (triggerSwitch == HIGH) {
+		goto shoot; //by-passing
+	}
+
+	//Screen lock
 	if (verEcranOption == true)
 	{
-		int verTime = verrTimer * 1000;
+		int8_t verTime = verrTimer * 1000;
 
 		if ((currentTime - lastTempVerrouilage) > verTime && ecranVerr == false)
 		{
@@ -458,32 +382,15 @@ void loop() {
 		}
 	}
 
-	//Alarme Tension Batterie
-	if (alarmBatOption == true)
-	{
-		if (voltCtrl.alarmVoltage(BatteryRead))
-		{
-			alarm.AlarmBat(reloadLEDRed);
-
-			alarmBatLow = true;
-
-			if (buzzOption == true)
-			{
-				alarm.BuzzerBat(buzzer);
-			}
-		}
-		else {
-			alarmBatLow = false;
-		}
-	}
-
-	//lecture du JoyStick
+	//Reading joystick
 	if (ecranVerr == false) {
 		if (joyBPush == HIGH)
 		{
+			digitalWrite(reloadLEDGreen, 1); //Lighting Green
+
 			if (enterPressed)
 			{
-				paramValueM = true;
+				paramValueMoins = true;
 			}
 			else {
 				sousMenuValue = 0;
@@ -500,14 +407,17 @@ void loop() {
 				lastTempVerrouilage = currentTime;
 			}
 
-			delay(200);
+			delay(100);
+			digitalWrite(reloadLEDGreen, 0); //Delighting green
 		}
 
 		if (joyHPush == HIGH)
 		{
+			digitalWrite(reloadLEDGreen, 1); //Lighting Green
+
 			if (enterPressed)
 			{
-				paramValueP = true;
+				paramValuePlus = true;
 			}
 			else {
 				sousMenuValue = 0;
@@ -524,11 +434,14 @@ void loop() {
 
 			lastTempVerrouilage = currentTime;
 
-			delay(200);
+			delay(100);
+			digitalWrite(reloadLEDGreen, 0); //Delighting green
 		}
 
 		if (joyDPush == HIGH && enterPressed == false)
 		{
+			digitalWrite(reloadLEDGreen, 1); //Lighting Green
+
 			if (sousMenuValue < 3)
 			{
 				sousMenuValue = sousMenuValue + 1;
@@ -536,11 +449,14 @@ void loop() {
 
 			lastTempVerrouilage = currentTime;
 
-			delay(200);
+			delay(100);
+			digitalWrite(reloadLEDGreen, 0); //Delighting green
 		}
 
 		if (joyGPush == HIGH && enterPressed == false)
 		{
+			digitalWrite(reloadLEDGreen, 1); //Lighting Green
+
 			if (sousMenuValue > 0)
 			{
 				sousMenuValue = sousMenuValue - 1;
@@ -548,12 +464,14 @@ void loop() {
 
 			lastTempVerrouilage = currentTime;
 
-			delay(200);
+			delay(100);
+			digitalWrite(reloadLEDGreen, 0); //Delighting green
 		}
 	}
 
 	if (joyPushed >= 1005)
 	{
+		digitalWrite(reloadLEDGreen, 1); //Lighting Green
 		if (enterPressed)
 		{
 			enterPressed = false;
@@ -580,6 +498,7 @@ void loop() {
 		}
 
 		delay(100);
+		digitalWrite(reloadLEDGreen, 0); //Delighting green
 	}
 
 	if (joyPushed <= 900 && appuieLong == true)
@@ -587,7 +506,7 @@ void loop() {
 		appuieLong = false;
 	}
 
-	//affichage du menu
+	//Menu's
 	switch (menuValue)
 	{
 	case 0:
@@ -598,73 +517,17 @@ void loop() {
 
 		if (sousMenuValue == 0)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-				if (paramValueM && ROFFull >= 1)
-				{
-					ROFFull = ROFFull - 1;
-				}
-				else if (paramValueP && ROFFull <= 44)
-				{
-					ROFFull = ROFFull + 1;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(ROFFullAdress, ROFFull);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(ROFFullAdress, ROFFull, 1, 44);
 		}
 
 		if (sousMenuValue == 1)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && ROF >= 1)
-				{
-					ROF = ROF - 1;
-				}
-				else if (paramValueP && ROF <= 44)
-				{
-					ROF = ROF + 1;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(ROFBurstAdress, ROF);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(ROFBurstAdress, ROF, 1, 44);
 		}
 
 		if (sousMenuValue == 2)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && burstBB >= 1)
-				{
-					burstBB = burstBB - 1;
-				}
-				else if (paramValueP && burstBB <= 5)
-				{
-					burstBB = burstBB + 1;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(burstBBAdress, burstBB);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(burstBBAdress, burstBB, -1, -1);
 		}
 
 		break;
@@ -673,49 +536,12 @@ void loop() {
 
 		if (sousMenuValue == 0)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && SnipeReady)
-				{
-					SnipeReady = false;
-				}
-				else if (paramValueP && !SnipeReady)
-				{
-					SnipeReady = true;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(SnipeReadyAdress, SnipeReady);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(SnipeReadyAdress, SnipeReady, -1, -1);
 		}
 
 		if (sousMenuValue == 1)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-				if (paramValueM && timeBolt >= 2)
-				{
-					timeBolt = timeBolt - 1;
-				}
-				else if (paramValueP && timeBolt <= 9)
-				{
-					timeBolt = timeBolt + 1;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(timeBoltAdress, timeBolt);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(timeBoltAdress, timeBolt, 2, 9);
 		}
 
 		break;
@@ -724,96 +550,22 @@ void loop() {
 
 		if (sousMenuValue == 0)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && bbrestChargeurValue >= 1)
-				{
-					bbrestChargeurValue = bbrestChargeurValue - 1;
-				}
-				else if (paramValueP && bbrestChargeurValue <= 1999)
-				{
-					bbrestChargeurValue = bbrestChargeurValue + 1;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(bbrestAdress, bbrestChargeurValue);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(bbrestAdress, bbrestChargeurValue, 1, 1999);
 		}
 
 		if (sousMenuValue == 1)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && blocageVideOption)
-				{
-					blocageVideOption = false;
-				}
-				else if (paramValueP && !blocageVideOption)
-				{
-					blocageVideOption = true;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(blocageVideAdress, blocageVideOption);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(blocageVideAdress, blocageVideOption, -1, -1);
 		}
 
 		if (sousMenuValue == 2)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-				if (paramValueM && chargerOption)
-				{
-					chargerOption = false;
-				}
-				else if (paramValueP && !chargerOption)
-				{
-					chargerOption = true;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(chargerOptionAdress, chargerOption);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(chargerOptionAdress, chargerOption, -1, -1);
 		}
 
 		if (sousMenuValue == 3)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-				if (paramValueM && buzzOption)
-				{
-					buzzOption = false;
-				}
-				else if (paramValueP && !buzzOption)
-				{
-					buzzOption = true;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(buzzOptionAdress, buzzOption);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(buzzOptionAdress, buzzOption, -1, -1);
 		}
 
 		break;
@@ -822,96 +574,22 @@ void loop() {
 
 		if (sousMenuValue == 0)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && alarmBBOption)
-				{
-					alarmBBOption = false;
-				}
-				else if (paramValueP && !alarmBBOption)
-				{
-					alarmBBOption = true;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(alarmBBOptionAdress, alarmBBOption);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(alarmBBOptionAdress, alarmBBOption, -1, -1);
 		}
 
 		if (sousMenuValue == 1)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && alarmBB >= 1)
-				{
-					alarmBB = alarmBB - 1;
-				}
-				else if (paramValueP && alarmBB <= 19)
-				{
-					alarmBB = alarmBB + 1;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(alarmBBAdress, alarmBB);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(alarmBBAdress, alarmBB, 1, 19);
 		}
 
 		if (sousMenuValue == 2)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-				if (paramValueM && handleOption)
-				{
-					handleOption = false;
-				}
-				else if (paramValueP && !handleOption)
-				{
-					handleOption = true;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(handleOptionAdress, handleOption);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(handleOptionAdress, handleOption, -1, -1);
 		}
 
 		if (sousMenuValue == 3)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-				if (paramValueM && greenLightChargingHandleOption)
-				{
-					greenLightChargingHandleOption = false;
-				}
-				else if (paramValueP && !greenLightChargingHandleOption)
-				{
-					greenLightChargingHandleOption = true;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(greenLightHandleAdress, greenLightChargingHandleOption);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(greenLightHandleAdress, greenLightChargingHandleOption, -1, -1);
 		}
 
 		break;
@@ -920,73 +598,17 @@ void loop() {
 
 		if (sousMenuValue == 0)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && verEcranOption)
-				{
-					verEcranOption = false;
-				}
-				else if (paramValueP && !verEcranOption)
-				{
-					verEcranOption = true;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(verEcranOptionAdress, verEcranOption);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(verEcranOptionAdress, verEcranOption, -1, -1);
 		}
 
 		if (sousMenuValue == 1)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && verrTimer >= 30)
-				{
-					verrTimer = verrTimer - 30;
-				}
-				else if (paramValueP && verrTimer <= 180)
-				{
-					verrTimer = verrTimer + 30;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(verrTimerAdress, verrTimer);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(verrTimerAdress, verrTimer, 30, 180);
 		}
 
 		if (sousMenuValue == 2)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-				if (paramValueM && alarmBatOption)
-				{
-					alarmBatOption = false;
-				}
-				else if (paramValueP && !alarmBatOption)
-				{
-					alarmBatOption = true;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(alarmBatAdress, alarmBatOption);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(alarmBatAdress, alarmBatOption, -1, -1);
 		}
 
 		break;
@@ -995,77 +617,58 @@ void loop() {
 
 		if (sousMenuValue == 0)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-				if (paramValueM && semiMode >= 2)
-				{
-					semiMode = semiMode - 1;
-				}
-				else if (paramValueP && semiMode <= 3)
-				{
-					semiMode = semiMode + 1;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(semiModeAdress, semiMode);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(semiModeAdress, semiMode, 2, 3);
 		}
 
 		if (sousMenuValue == 1)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && fullMode >= 2)
-				{
-					fullMode = fullMode - 1;
-				}
-				else if (paramValueP && fullMode <= 3)
-				{
-					fullMode = fullMode + 1;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(fullModeAdress, fullMode);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(fullModeAdress, fullMode, 2, 3);
 		}
 
 		if (sousMenuValue == 2)
 		{
-			if (enterPressed)
-			{
-				//modification de valeur
-
-				if (paramValueM && dwel >= 0)
-				{
-					dwel = dwel - 1;
-				}
-				else if (paramValueP && dwel <= 199)
-				{
-					dwel = dwel + 1;
-				}
-			}
-
-			if (enterPressedSave)
-			{
-				//Save dans l'EEPROM
-				EEPROM.put(dwelAdress, dwel);
-				enterPressedSave = false;
-			}
+			savingToEEPROM(dwelAdress, dwel, 0, 199);
 		}
 		break;
 	}
 
-	paramValueM = false;
-	paramValueP = false;
+	paramValueMoins = false;
+	paramValuePlus = false;
+}
+
+void savingToEEPROM(int8_t eepromAddress, int8_t parameter, int8_t maxValue, int8_t minValue)
+{
+	if (enterPressed)
+	{
+		if (maxValue >= 0 && minValue >= 0)
+		{
+			//Value modifying
+			if (paramValueMoins && parameter >= minValue)
+			{
+				parameter = parameter - 1;
+			}
+			else if (paramValuePlus && parameter <= maxValue)
+			{
+				parameter = parameter + 1;
+			}
+		}
+		else {
+			//Value modifying
+			if (paramValueMoins && parameter == 1)
+			{
+				parameter = parameter - 1;
+			}
+			else if (paramValuePlus && parameter == 0)
+			{
+				parameter = parameter + 1;
+			}
+		}
+	}
+
+	if (enterPressedSave)
+	{
+		//Saving in EEPROM
+		EEPROM.put(eepromAddress, parameter);
+		enterPressedSave = false;
+	}
 }

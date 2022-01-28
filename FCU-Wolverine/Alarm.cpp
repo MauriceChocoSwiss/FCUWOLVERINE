@@ -8,7 +8,7 @@ Alarm::Alarm() {
 
 }
 
-bool Alarm::AlarmEmpty(int pin)
+bool Alarm::AlarmEmpty(int8_t pin)
 {
 	digitalWrite(pin, 1);
 	delay(150);
@@ -17,7 +17,7 @@ bool Alarm::AlarmEmpty(int pin)
 	return true;
 }
 
-bool Alarm::AlarmLowBB(int pin)
+bool Alarm::AlarmLowBB(int8_t pin)
 {
 	digitalWrite(pin, 1);
 	delay(150);
@@ -26,21 +26,21 @@ bool Alarm::AlarmLowBB(int pin)
 	return true;
 }
 
-void Alarm::AlarmBat(int pin)
+void Alarm::AlarmBat(int8_t pin)
 {
 	digitalWrite(pin, 1);
 	delay(250);
 	digitalWrite(pin, 0);
 }
 
-void Alarm::BuzzerLow(int pin)
+void Alarm::BuzzerLow(int8_t pin)
 {
 	tone(pin, 4000, 500);
 	delay(200);
 	noTone(pin);
 }
 
-void Alarm::BuzzerBat(int pin)
+void Alarm::BuzzerBat(int8_t pin)
 {
 	tone(pin, 1500, 1000);
 	delay(300);

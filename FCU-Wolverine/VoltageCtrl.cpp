@@ -1,5 +1,7 @@
 #include "VoltageCtrl.h"
 
+unsigned long previousMillisAlarm = 0;
+
 /** Mesure la r�f�rence interne � 1.1 volts */
 unsigned int analogReadReference(void) {
 
@@ -28,18 +30,21 @@ VoltageCtrl::VoltageCtrl() {
 
 }
 
-double VoltageCtrl::VoltageValue(int pin) {
+double VoltageCtrl::VoltageValue(int8_t pin) {
 	float real_vin = (((analogRead(pin) * 1.1)/ analogReadReference()) * 4) -0.20;
 	
 	return real_vin;
 }
 
-bool VoltageCtrl::alarmVoltage(int pin)
+bool VoltageCtrl::alarmVoltage(int8_t pin, unsigned long currentMillis)
 {
-	if (VoltageValue(pin) < 7.40)
-	{
-		return true;
-	}
+	if (currentMillis - previousMillisAlarm >= 30000) {
 
+		if (VoltageValue(pin) < 7.40)
+		{
+			return true;
+		}
+		previousMillisAlarm = currentMillis;
+	}
 	return false;
 }

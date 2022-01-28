@@ -7,12 +7,11 @@
 class Alarm {
 public: 
 	Alarm();
-	bool AlarmEmpty(int pin);
-	bool AlarmLowBB(int pin);
-	void AlarmBat(int pin);
-	void BuzzerLow(int pin);
-	void BuzzerBat(int pin);
+	bool AlarmEmpty(int8_t pin);
+	bool AlarmLowBB(int8_t pin);
+	void AlarmBat(int8_t pin);
+	void BuzzerLow(int8_t pin);
+	void BuzzerBat(int8_t pin);
 };
 
 #endif
-
