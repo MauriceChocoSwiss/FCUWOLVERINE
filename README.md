@@ -1,77 +1,93 @@
 # FCUWOLVERINE
 A FCU for Wolverine airsoft HPA system
 
-Petite présentation des fonctionnalités de cette petite carte sur base arduino..
+---
 
-Je vais expliquer les menus dans l'ordre 1 par 1.
+## Small Presentation of the project
 
-Les valeurs 0 ou 1 signifient respectivement, Non et Oui.
+It's an custom hand made fcu based on arduino nano. i've some options like marg switch and charging Handle connection.
+In addition to standards mode like semi, burst and full auto, a sniper mode is available. Unfortunately, no shotgun mode due to lack of nozzle poppet solenoid
 
-Menu principal -> 
+---
 
-  -En haut à gauche: billes restantes dans le chargeur et nombre de billes théorique du chargeur.
-  
-  -En haut à droite: compteur total de billes tirées depuis la mise sous tension.
-  
-  -En bas à gauche: mode de tir. Pour le Burst, le nombre représente le nombre tiré pendant la rafale.
-  
-  -En bas à droit: Tension de la batterie.
+## Basic features & specs 
+- Only lipo 2S compatibility -- Voltage control and warning, block firing if battery is too low -> see menu settings to find options relative to battery voltage
+- Dwel and rof setting. Dwel is common for all mode and ROF for burst and full auto mode.
+- Sniper mode with adjustable delay
+- Magazin settings -- Max bb's per mag settings, blocking fire when "empty mag", alarm "near to empty", charging handle to reset mag capacity, mag switch to prevent blank fire
 
-Les menus seront ensuite expliqués dans le cas ou vous actionnez le joystick vers le haut.
+For more details about options and features, see menus below ;)
 
-Menu Burst -> 
+---
 
-  -En haut à gauche: Rate of fire en mode full, valeur bloquée à 35 max (nbr de billes par seconde).
-  
-  -En bas à gauche: Rate of fire en mode Burst(rafale), valeur bloquée à 35 max (nbr de billes par seconde).
-  
-  -En bas à droite: Nombre de billes de la rafale.
+Menu list by order
 
-Menu Sniper ->
+NOTA: 0 is for no or false and 1 for yes or true
 
-  -En haut à gauche: Activation de la led verte pour signal "pret a tirer".
-  
-  -En bas à gauche: Délai en seconde pour la simulation de l'armement manuel.
-  
-Menu Chargeur -> 
+### Main menu -> 
 
-  -En haut à gauche: Definition de la quantité de billes du chargeur.
+  - Top Left: theorical bb's remaining in the mag and theorical bb's amount in the mag
   
-  -En haut à droite: Activation du blocage de la réplique lorsque le compteur arrive à 0 ou en dessous.
+  - Top Right: total bb's shoot since powered up
   
-  -En bas à gauche: Activation de la détection chargeur. Si oui, la réplique ne peut tirer si le switch ou bouton du chargeur n'est pas activé.
-   Le cas échéant la réplique pourra tirer sans chargeur.
+  - Bottom Left: Firing mode. For the burst, the ammount is the burst quantity
   
-  -En bas à droite: Activation du buzzer pour l'alarme "capacité Low".
+  - Bottom Right: Tension de la batterie
 
-Menu Chargeur 2 -> 
-  
-  -En haut à gauche: Activation de l'alarme "Capacité Low" et "Plus de bille".
-  
-  -En haut à droite: Quantité de billes de l'alarme "Low".
-  
-  -En bas à gauche: Activation de la dectection de la charging handle. Lorsque le blocage de fin de chargeur est activé, si vous remettez un chargeur sans activer la charging handle alors que l'option est active, vous ne pourrez pas tirer.
-  
-  -En bas à droite: LED de la charging handle, indiquant que la réplique est prete a tirer.
+### For the next menus, i'll explain them when you go UP
 
-MenuSettings -> 
-  
-  -En haut à gauche: Activation du verouillage d'écran -> délai de dévérouillage : 3 secs.
-  
-  -En haut à droite: Delai d'extinction en secondes, avance de 30sec. en 30sec.
-  
-  -En bas à gauche: Activation de l'alarme tension batterie et blocage des tirs.
-  
-Menu Settings 2 ->
+### Burst /Full auto Menu -> 
 
-Détails des valeurs pour la position du selecteur:
+  - Top Left: Rate of fire in full auto
+  
+  - Top Right: Rate of fire in Burst mode
+  
+  - Bottom Left: Burst bb count
+
+### Sniper Menu ->
+
+  - Top left: Activating green LED for "Ready to shoot" signal
+  
+  - Bottom left: Delay to simulate sniper mode
+  
+### Mag Menu -> 
+
+  - Top Left: Theorical bb's count in mag (can be less than real capacity)
+  
+  - Top Right: Activating blocking when bb's count fall to 0
+  
+  - Bottom Left: Activating mag detection (via wired switch). If ON, the fcu will fire only if a the mag switch is pushed. If OFF, the FCU will work anytime
+  
+  - Bottom Right: Activating of "Low capacity" buzzer
+
+### Mag Menu 2 -> 
+  
+  - Top Left: Activating of "low capacity" and "Empty mag" alarm (only LED's)
+  
+  - Bottom Right: BB's amount for "Low capacity".
+  
+  - Bottom Left: Activating of the charging handle/ If ON + empty mag blocking ON, if you change the mag without manipulate the charging handle, you can't fire
+  
+  - Bottom Right: Charging handle LED, meaning "Ready to shoot"
+
+### Settings Menu -> 
+  
+  - Top Left: Screen locking -> unlocking delay : 3 Sec
+  
+  - Top Right: Screen off delay 30sec by 30sec
+  
+  - Bottom Left: Voltage alarm with shoot blocking 
+  
+### Settings Menu 2 ->
+
+Values details for selector
   1: Semi
   2: Burst
-  3:Full
-  4:Sniper
+  3: Full
+  4: Sniper
   
-  -En haut à gauche: Sélection du mode de tir pour la position SEMI du sélecteur.
+  - Top Left: Selector on SEMI shooting mode
   
-  -En bas à gauche: Sélection du mode de tir pour la position FULL du sélecteur.
+  - Bottom Left : Selector FULL auto shooting mode
   
-  -En bas à droite: Réglage du dwel, valeur de 25 à 110, incrément de 1.
+  - Bottom Right: Dwel settings, max 200, increase by 1
