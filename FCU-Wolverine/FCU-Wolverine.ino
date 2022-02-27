@@ -167,12 +167,12 @@ shoot: //step to by-pass non essentials functions
 	triggerSwitch = digitalRead(trigger);
 	selectorSwitch = digitalRead(selector);
 	chargerSwitch = digitalRead(charger);
-	handleSwitch = analogRead(chargingHandle);
+	handleSwitch = digitalRead(chargingHandle);
 	joyBPush = digitalRead(joyB);
 	joyDPush = digitalRead(joyD);
 	joyGPush = digitalRead(joyG);
 	joyHPush = digitalRead(joyH);
-	joyPushed = analogRead(joyPush);
+	joyPushed = digitalRead(joyPush);
 
 	//Fire mode displaying
 	switch (selectorSwitch == HIGH ? fullMode : semiMode) {
@@ -469,7 +469,7 @@ shoot: //step to by-pass non essentials functions
 		}
 	}
 
-	if (joyPushed >= 1005)
+	if (joyPushed == true)
 	{
 		digitalWrite(reloadLEDGreen, 1); //Lighting Green
 		if (enterPressed)
@@ -501,7 +501,7 @@ shoot: //step to by-pass non essentials functions
 		digitalWrite(reloadLEDGreen, 0); //Delighting green
 	}
 
-	if (joyPushed <= 900 && appuieLong == true)
+	if (joyPushed == false && appuieLong == true)
 	{
 		appuieLong = false;
 	}
@@ -527,7 +527,7 @@ shoot: //step to by-pass non essentials functions
 
 		if (sousMenuValue == 2)
 		{
-			savingToEEPROM(burstBBAdress, burstBB, -1, -1);
+			savingToEEPROM(burstBBAdress, burstBB);
 		}
 
 		break;
@@ -536,7 +536,7 @@ shoot: //step to by-pass non essentials functions
 
 		if (sousMenuValue == 0)
 		{
-			savingToEEPROM(SnipeReadyAdress, SnipeReady, -1, -1);
+			savingToEEPROM(SnipeReadyAdress, SnipeReady);
 		}
 
 		if (sousMenuValue == 1)
@@ -555,17 +555,17 @@ shoot: //step to by-pass non essentials functions
 
 		if (sousMenuValue == 1)
 		{
-			savingToEEPROM(blocageVideAdress, blocageVideOption, -1, -1);
+			savingToEEPROM(blocageVideAdress, blocageVideOption);
 		}
 
 		if (sousMenuValue == 2)
 		{
-			savingToEEPROM(chargerOptionAdress, chargerOption, -1, -1);
+			savingToEEPROM(chargerOptionAdress, chargerOption);
 		}
 
 		if (sousMenuValue == 3)
 		{
-			savingToEEPROM(buzzOptionAdress, buzzOption, -1, -1);
+			savingToEEPROM(buzzOptionAdress, buzzOption);
 		}
 
 		break;
@@ -574,7 +574,7 @@ shoot: //step to by-pass non essentials functions
 
 		if (sousMenuValue == 0)
 		{
-			savingToEEPROM(alarmBBOptionAdress, alarmBBOption, -1, -1);
+			savingToEEPROM(alarmBBOptionAdress, alarmBBOption);
 		}
 
 		if (sousMenuValue == 1)
@@ -584,12 +584,12 @@ shoot: //step to by-pass non essentials functions
 
 		if (sousMenuValue == 2)
 		{
-			savingToEEPROM(handleOptionAdress, handleOption, -1, -1);
+			savingToEEPROM(handleOptionAdress, handleOption);
 		}
 
 		if (sousMenuValue == 3)
 		{
-			savingToEEPROM(greenLightHandleAdress, greenLightChargingHandleOption, -1, -1);
+			savingToEEPROM(greenLightHandleAdress, greenLightChargingHandleOption);
 		}
 
 		break;
@@ -598,7 +598,7 @@ shoot: //step to by-pass non essentials functions
 
 		if (sousMenuValue == 0)
 		{
-			savingToEEPROM(verEcranOptionAdress, verEcranOption, -1, -1);
+			savingToEEPROM(verEcranOptionAdress, verEcranOption);
 		}
 
 		if (sousMenuValue == 1)
@@ -608,7 +608,7 @@ shoot: //step to by-pass non essentials functions
 
 		if (sousMenuValue == 2)
 		{
-			savingToEEPROM(alarmBatAdress, alarmBatOption, -1, -1);
+			savingToEEPROM(alarmBatAdress, alarmBatOption);
 		}
 
 		break;
@@ -640,28 +640,14 @@ void savingToEEPROM(int8_t eepromAddress, int8_t parameter, int8_t maxValue, int
 {
 	if (enterPressed)
 	{
-		if (maxValue >= 0 && minValue >= 0)
+		//Value modifying
+		if (paramValueMoins && parameter >= minValue)
 		{
-			//Value modifying
-			if (paramValueMoins && parameter >= minValue)
-			{
-				parameter = parameter - 1;
-			}
-			else if (paramValuePlus && parameter <= maxValue)
-			{
-				parameter = parameter + 1;
-			}
+			parameter -= 1;
 		}
-		else {
-			//Value modifying
-			if (paramValueMoins && parameter == 1)
-			{
-				parameter = parameter - 1;
-			}
-			else if (paramValuePlus && parameter == 0)
-			{
-				parameter = parameter + 1;
-			}
+		else if (paramValuePlus && parameter <= maxValue)
+		{
+			parameter += 1;
 		}
 	}
 
@@ -671,4 +657,27 @@ void savingToEEPROM(int8_t eepromAddress, int8_t parameter, int8_t maxValue, int
 		EEPROM.put(eepromAddress, parameter);
 		enterPressedSave = false;
 	}
+}
+
+void savingToEEPROM(int8_t eepromAddress, bool parameter)
+{
+	if (enterPressed)
+	{
+		//Value modifying
+		if (paramValueMoins && parameter)
+		{
+			parameter = false;
+		}
+		else if (paramValuePlus && ! parameter)
+		{
+			parameter = true;
+		}
+	}
+
+  if (enterPressedSave)
+  {
+  	//Saving in EEPROM
+  	EEPROM.put(eepromAddress, parameter);
+  	enterPressedSave = false;
+  }
 }
