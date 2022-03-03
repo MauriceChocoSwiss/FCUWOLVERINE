@@ -5,7 +5,7 @@
 class Firing {
 	public:
 		Firing();
-		void Fire(int8_t pin, int8_t dwel);
+		void Fire(int8_t pin, int16_t dwel);
 };
 
 #endif

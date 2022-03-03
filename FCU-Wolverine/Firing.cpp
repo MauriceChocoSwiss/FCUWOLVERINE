@@ -4,7 +4,7 @@ Firing::Firing() {
 
 }
 
-void Firing::Fire(int8_t pin, int8_t dwel)
+void Firing::Fire(int8_t pin, int16_t dwel)
 {
     digitalWrite(pin, 1);
     delay(dwel / 2.5);

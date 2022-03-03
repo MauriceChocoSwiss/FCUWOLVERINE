@@ -34,7 +34,7 @@ void Menu::StartMenu(int8_t buzzer) {
 
 }
 
-void Menu::MainDisplay(double voltValue, int8_t bbrest, int8_t bbrestChargeur, String modeValue, int8_t bbtire)
+void Menu::MainDisplay(double voltValue, int16_t bbrest, int16_t bbrestChargeur, String modeValue, int16_t bbtire)
 {
   displayMenu.clearBuffer();
 	displayMenu.setCursor(0, 8);
@@ -55,7 +55,7 @@ void Menu::MainDisplay(double voltValue, int8_t bbrest, int8_t bbrestChargeur, S
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuFullBurst(int8_t ROFFull, int8_t ROFBurst, int8_t QteBB,int8_t sousMenuValue)
+void Menu::MenuFullBurst(int8_t ROFFull, int8_t ROFBurst, int8_t BurstBB, int8_t sousMenuValue)
 {
   displayMenu.clearBuffer();
 	displayMenu.setCursor(0, 8);
@@ -82,7 +82,7 @@ void Menu::MenuFullBurst(int8_t ROFFull, int8_t ROFBurst, int8_t QteBB,int8_t so
 	}
 	displayMenu.setCursor(80, 32);
 	displayMenu.print("Qte BB:");
-	displayMenu.print(QteBB);
+	displayMenu.print(BurstBB);
  displayMenu.sendBuffer();
 }
 
@@ -110,7 +110,7 @@ void Menu::MenuSniper(int8_t timeBolt, bool greenLed, int8_t sousMenuValue)
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuChargeur1(int8_t chargeurCap, bool switchchargeur, bool buzzer, bool blocage, int8_t sousMenuValue)
+void Menu::MenuChargeur1(int16_t chargeurCap, bool switchchargeur, bool buzzer, bool blocage, int8_t sousMenuValue)
 {
 	displayMenu.clearBuffer();
 
@@ -233,7 +233,7 @@ void Menu::MenuSetting(int8_t veille, bool verrou, bool LowBat, int8_t sousMenuV
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuSetting2(int8_t semi, int8_t full, int8_t dwel, int8_t sousMenuValue)
+void Menu::MenuSetting2(int8_t semi, int8_t full, int16_t dwel, int8_t sousMenuValue)
 {
 	displayMenu.clearBuffer();
 
@@ -274,7 +274,7 @@ void Menu::MenuDever()
 	displayMenu.setCursor(0, 12);
 	displayMenu.print("Deverrouillage !");
 
-  displayMenu.sendBuffer();
+	displayMenu.sendBuffer();
 }
 
 void Menu::MenuVer()
