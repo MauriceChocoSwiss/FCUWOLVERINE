@@ -34,17 +34,17 @@ void Menu::StartMenu(int8_t buzzer) {
 
 }
 
-void Menu::MainDisplay(double voltValue, int16_t bbrest, int16_t bbrestChargeur, String modeValue, int16_t bbtire)
+void Menu::MainMenu(double voltValue, int16_t bbsLeft, int16_t bbsLeftMag, String modeValue, int16_t bbsShot)
 {
   displayMenu.clearBuffer();
 	displayMenu.setCursor(0, 8);
 	displayMenu.print("BB:");
-	displayMenu.print(bbrest);
+	displayMenu.print(bbsLeft);
 	displayMenu.print("|");
-	displayMenu.print(bbrestChargeur);
+	displayMenu.print(bbsLeftMag);
   displayMenu.setCursor(74, 8);
 	displayMenu.print("Tiré:");
-	displayMenu.print(bbtire);
+	displayMenu.print(bbsShot);
 
 	displayMenu.setCursor(0, 32);
 	displayMenu.print(modeValue);
@@ -55,13 +55,13 @@ void Menu::MainDisplay(double voltValue, int16_t bbrest, int16_t bbrestChargeur,
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuFullBurst(int8_t ROFFull, int8_t ROFBurst, int8_t BurstBB, int8_t sousMenuValue)
+void Menu::FullBurstMenu(int8_t ROFFull, int8_t ROFBurst, int8_t BurstBB, int8_t subMenuValue)
 {
   displayMenu.clearBuffer();
 	displayMenu.setCursor(0, 8);
 	displayMenu.print("ROF Full:");
 	displayMenu.print(ROFFull);
-	if (sousMenuValue == 0)
+	if (subMenuValue == 0)
 	{
 		displayMenu.print("<");
 	}
@@ -70,13 +70,13 @@ void Menu::MenuFullBurst(int8_t ROFFull, int8_t ROFBurst, int8_t BurstBB, int8_t
 	displayMenu.setCursor(0, 32);
 	displayMenu.print("ROF Burst:");
 	displayMenu.print(ROFBurst);
-	if (sousMenuValue == 1)
+	if (subMenuValue == 1)
 	{
 		displayMenu.print("<");
 	}
 
 	displayMenu.setCursor(74,32);
-	if (sousMenuValue == 2)
+	if (subMenuValue == 2)
 	{
 		displayMenu.print(">");
 	}
@@ -86,7 +86,7 @@ void Menu::MenuFullBurst(int8_t ROFFull, int8_t ROFBurst, int8_t BurstBB, int8_t
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuSniper(int8_t timeBolt, bool greenLed, int8_t sousMenuValue)
+void Menu::SniperMenu(int8_t timeBolt, bool greenLed, int8_t subMenuValue)
 {
 	displayMenu.clearBuffer();
 
@@ -94,7 +94,7 @@ void Menu::MenuSniper(int8_t timeBolt, bool greenLed, int8_t sousMenuValue)
 	displayMenu.setCursor(0, 8);
 	displayMenu.print("LED Vert ?:");
 	displayMenu.print(greenLed);
-	if (sousMenuValue == 0)
+	if (subMenuValue == 0)
 	{
 		displayMenu.print("<");
 	}
@@ -103,48 +103,48 @@ void Menu::MenuSniper(int8_t timeBolt, bool greenLed, int8_t sousMenuValue)
 	displayMenu.setCursor(0, 32);
 	displayMenu.print("Interv.:");
 	displayMenu.print(timeBolt);
-	if (sousMenuValue == 1)
+	if (subMenuValue == 1)
 	{
 		displayMenu.print("<");
 	}
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuChargeur1(int16_t chargeurCap, bool switchchargeur, bool buzzer, bool blocage, int8_t sousMenuValue)
+void Menu::MagMenu1(int16_t magCapacity, bool magSwitch, bool buzzer, bool emptyMagBlocking, int8_t subMenuValue)
 {
 	displayMenu.clearBuffer();
 
 	//
 	displayMenu.setCursor(0, 8);
 	displayMenu.print("Cap:");
-	displayMenu.print(chargeurCap);
-	if (sousMenuValue == 0)
+	displayMenu.print(magCapacity);
+	if (subMenuValue == 0)
 	{
 		displayMenu.print("<");
 	}
 
 	//
 	displayMenu.setCursor(66, 8);
-	if (sousMenuValue == 1)
+	if (subMenuValue == 1)
 	{
 		displayMenu.print(">");
 	}
 	displayMenu.setCursor(72, 8);
 	displayMenu.print("Bloc ?:");
-	displayMenu.print(blocage);
+	displayMenu.print(emptyMagBlocking);
 
 	//
 	displayMenu.setCursor(0, 32);
 	displayMenu.print("Charg ?:");
-	displayMenu.print(switchchargeur);
-	if (sousMenuValue == 2)
+	displayMenu.print(magSwitch);
+	if (subMenuValue == 2)
 	{
 		displayMenu.print("<");
 	}
 
 	//
 	displayMenu.setCursor(66, 32);
-	if (sousMenuValue == 3)
+	if (subMenuValue == 3)
 	{
 		displayMenu.print(">");
 	}
@@ -155,7 +155,7 @@ void Menu::MenuChargeur1(int16_t chargeurCap, bool switchchargeur, bool buzzer, 
   displayMenu.sendBuffer();
 }
 
-void Menu::MenuChargeur2(bool alarm, int8_t alarmLowBB, bool chargingHandle, bool greenLight, int8_t sousMenuValue)
+void Menu::MagMenu2(bool alarm, int8_t alarmLowBB, bool chargingHandle, bool greenLight, int8_t subMenuValue)
 {
 	displayMenu.clearBuffer();
 
@@ -163,14 +163,14 @@ void Menu::MenuChargeur2(bool alarm, int8_t alarmLowBB, bool chargingHandle, boo
 	displayMenu.setCursor(0, 8);
 	displayMenu.print("Alarm ?:");
 	displayMenu.print(alarm);
-	if (sousMenuValue == 0)
+	if (subMenuValue == 0)
 	{
 		displayMenu.print("<");
 	}
 
 	//
 	displayMenu.setCursor(70, 8);
-	if (sousMenuValue == 1)
+	if (subMenuValue == 1)
 	{
 		displayMenu.print(">");
 	}
@@ -182,14 +182,14 @@ void Menu::MenuChargeur2(bool alarm, int8_t alarmLowBB, bool chargingHandle, boo
 	displayMenu.setCursor(0, 32);
 	displayMenu.print("Hand ?:");
 	displayMenu.print(chargingHandle);
-	if (sousMenuValue == 2)
+	if (subMenuValue == 2)
 	{
 		displayMenu.print("<");
 	}
 
 	//
 	displayMenu.setCursor(70, 32);
-	if (sousMenuValue == 3)
+	if (subMenuValue == 3)
 	{
 		displayMenu.print(">");
 	}
@@ -199,41 +199,41 @@ void Menu::MenuChargeur2(bool alarm, int8_t alarmLowBB, bool chargingHandle, boo
 displayMenu.sendBuffer();
 }
 
-void Menu::MenuSetting(int8_t veille, bool verrou, bool LowBat, int8_t sousMenuValue)
+void Menu::SettingsMenu1(int8_t screenLockValue, bool screenLockOption, bool LowBat, int8_t subMenuValue)
 {
 	displayMenu.clearBuffer();
 	
 	//
 	displayMenu.setCursor(0, 8);
 	displayMenu.print("Ver ?:");
-	displayMenu.print(verrou);
-	if (sousMenuValue == 0)
+	displayMenu.print(screenLockOption);
+	if (subMenuValue == 0)
 	{
 		displayMenu.print("<");
 	}
 
 	//
 	displayMenu.setCursor(70, 8);
-	if (sousMenuValue == 1)
+	if (subMenuValue == 1)
 	{
 		displayMenu.print(">");
 	}
 	displayMenu.setCursor(76, 8);
 	displayMenu.print("Time:");
-	displayMenu.print(veille);
+	displayMenu.print(screenLockValue);
 
 	//
 	displayMenu.setCursor(0, 32);
 	displayMenu.print("Al Bat ?:");
 	displayMenu.print(LowBat);
-	if (sousMenuValue == 2)
+	if (subMenuValue == 2)
 	{
 		displayMenu.print("<");
 	}
  displayMenu.sendBuffer();
 }
 
-void Menu::MenuSetting2(int8_t semi, int8_t full, int16_t dwel, int8_t sousMenuValue)
+void Menu::SettingMenu2(int8_t semi, int8_t full, int16_t dwel, int8_t subMenuValue)
 {
 	displayMenu.clearBuffer();
 
@@ -241,7 +241,7 @@ void Menu::MenuSetting2(int8_t semi, int8_t full, int16_t dwel, int8_t sousMenuV
 	displayMenu.setCursor(0, 8);
 	displayMenu.print("Semi:");
 	displayMenu.print(semi);
-	if (sousMenuValue == 0)
+	if (subMenuValue == 0)
 	{
 		displayMenu.print("<");
 	}
@@ -250,14 +250,14 @@ void Menu::MenuSetting2(int8_t semi, int8_t full, int16_t dwel, int8_t sousMenuV
 	displayMenu.setCursor(0, 32);
 	displayMenu.print("Full:");
 	displayMenu.print(full);
-	if (sousMenuValue == 1)
+	if (subMenuValue == 1)
 	{
 		displayMenu.print("<");
 	}
 
 	//
 	displayMenu.setCursor(64, 32);
-	if (sousMenuValue == 2)
+	if (subMenuValue == 2)
 	{
 		displayMenu.print(">");
 	}
@@ -267,7 +267,7 @@ void Menu::MenuSetting2(int8_t semi, int8_t full, int16_t dwel, int8_t sousMenuV
 displayMenu.sendBuffer();
 }
 
-void Menu::MenuDever()
+void Menu::UnlockDisplay()
 {
 	displayMenu.clearBuffer();
 
@@ -277,7 +277,7 @@ void Menu::MenuDever()
 	displayMenu.sendBuffer();
 }
 
-void Menu::MenuVer()
+void Menu::lockDisplay()
 {
 	displayMenu.clearBuffer();
 

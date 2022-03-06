@@ -7,20 +7,20 @@
 //pin assignment
 int trigger = 2;
 int8_t selector = 3;
-int8_t charger = 4;
+int8_t magazine = 4;
 int8_t reloadLEDRed = 7;
 int8_t reloadLEDGreen = 6;
 int8_t reloadLEDBlue = 5;
 int8_t solenoid = 8;
 int8_t buzzer = 13;
 
-int8_t joyB = 12;
-int8_t joyG = 11;
-int8_t joyH = 10;
-int8_t joyD = 9;
+int8_t joyBottom = 12;
+int8_t joyLeft = 11;
+int8_t joyUp = 10;
+int8_t joyRight = 9;
 int8_t joyPush = A0;
 int8_t chargingHandle = A7;
-int8_t BatteryRead = A1;
+int8_t batteryReading = A1;
 
 //set switch states to 0
 int16_t triggerSwitch = 0;
@@ -34,8 +34,8 @@ int16_t joyDPush = 0;
 int16_t joyPushed = 0;
 
 //local variables
-int16_t bbrestChargeurValue;
-int16_t bbrest;
+int16_t bbsLeftMagValue;
+int16_t bbsLeft;
 int8_t alarmBB;
 int8_t ROFFull;
 int8_t ROFBurst;
@@ -44,25 +44,25 @@ int8_t semiMode;
 int8_t fullMode;
 int8_t timeBolt;
 int16_t dwel;
-int8_t verrTimer;
+int8_t screenLockLastTimer;
 String modeValue;
 int8_t menuValue = 0;
-int8_t sousMenuValue = 0;
+int8_t subMenuValue = 0;
 bool paramValuePlus = false;
 bool paramValueMoins = false;
 int16_t bbtire = 0;
-long lastTempVerrouilage;
-long tempsDever;
+long screenLockLastTimer;
+long screenUnlockTimer;
 unsigned long previousMillisBolt = 0;
 unsigned long currentTime;
 
 //options
-bool chargerOption;
+bool magOption;
 bool handleOption;
 bool buzzOption;
-bool blocageVideOption;
+bool emptyMagLockOption;
 bool alarmBBOption;
-bool verEcranOption;
+bool screenLockOption;
 bool SnipeReady;
 bool greenLightChargingHandleOption;
 bool alarmBatOption;
@@ -70,15 +70,15 @@ bool alarmBatOption;
 //states
 bool triggerStateFired = false;
 bool sniperBlocked = false;
-bool chargerState = false;
-bool blocageState = false;
+bool magState = false;
+bool emptyMagBlockingState = false;
 bool alarmLowPassed = false;
 bool alarmEmptyPassed = false;
 bool enterPressed = false;
 bool enterPressedSave = false;
 bool alarmBatLow = false;
-bool ecranVerr = false;
-bool appuieLong = false;
+bool screenLocked = false;
+bool longPress = false;
 
 //Eeprom Addresses
 int8_t ROFFullAdress = 0; //2
@@ -87,16 +87,16 @@ int8_t burstBBAdress = 4; //2
 int8_t SnipeReadyAdress = 6; //1
 int8_t timeBoltAdress = 7; //2
 int8_t bbrestAdress = 9; //3
-int8_t chargerOptionAdress = 12; //1
+int8_t magOptionAdress = 12; //1
 int8_t buzzOptionAdress = 13; //1
-int8_t blocageVideAdress = 14; //1
+int8_t emptyMagLockingAdress = 14; //1
 int8_t alarmBBOptionAdress = 15; //1
 int8_t alarmBBAdress = 16; //2
 int8_t handleOptionAdress = 18; //1
 int8_t greenLightHandleAdress = 19; //1
-int8_t verrTimerAdress = 20; //3
+int8_t screenLockTimerAdress = 20; //3
 int8_t dwelAdress = 23; //3
-int8_t verEcranOptionAdress = 26; //1
+int8_t screenLockOptionAdress = 26; //1
 int8_t alarmBatAdress = 27; //1
 int8_t semiModeAdress = 28;//2
 int8_t fullModeAdress = 30;//
@@ -112,19 +112,15 @@ void setup() {
 
 	Serial.begin(9600);
 
-	pinMode(joyB, INPUT);
-	pinMode(joyG, INPUT);
-	pinMode(joyH, INPUT);
-	pinMode(joyD, INPUT);
+	pinMode(joyBottom, INPUT);
+	pinMode(joyLeft, INPUT);
+	pinMode(joyUp, INPUT);
+	pinMode(joyRight, INPUT);
 	pinMode(joyPush, INPUT);
 	pinMode(chargingHandle, INPUT);
 	pinMode(trigger, INPUT);
 	pinMode(selector, INPUT);
-	pinMode(charger, INPUT);
-	pinMode(joyB, INPUT);
-	pinMode(joyD, INPUT);
-	pinMode(joyG, INPUT);
-	pinMode(joyH, INPUT);
+	pinMode(magazine, INPUT);
 	pinMode(solenoid, OUTPUT);
 	pinMode(reloadLEDRed, OUTPUT);
 	pinMode(reloadLEDBlue, OUTPUT);
@@ -137,41 +133,41 @@ void setup() {
 	EEPROM.get(ROFFullAdress, ROFFull);
 	EEPROM.get(ROFBurstAdress, ROFBurst);
 	EEPROM.get(burstBBAdress, burstBB);
-	EEPROM.get(bbrestAdress, bbrestChargeurValue);
-	EEPROM.get(bbrestAdress, bbrest);
+	EEPROM.get(bbrestAdress, bbsLeftMagValue);
+	EEPROM.get(bbrestAdress, bbsLeft);
 	EEPROM.get(alarmBBAdress, alarmBB);
 	EEPROM.get(semiModeAdress, semiMode);
 	EEPROM.get(fullModeAdress, fullMode);
 	EEPROM.get(timeBoltAdress, timeBolt);
 	EEPROM.get(dwelAdress, dwel);
-	EEPROM.get(verrTimerAdress, verrTimer);
-	EEPROM.get(chargerOptionAdress, chargerOption);
+	EEPROM.get(screenLockTimerAdress, screenLockLastTimer);
+	EEPROM.get(magOptionAdress, magOption);
 	EEPROM.get(handleOptionAdress, handleOption);
 	EEPROM.get(buzzOptionAdress, buzzOption);
-	EEPROM.get(blocageVideAdress, blocageVideOption);
+	EEPROM.get(emptyMagLockingAdress, emptyMagLockOption);
 	EEPROM.get(alarmBBOptionAdress, alarmBBOption);
-	EEPROM.get(verEcranOptionAdress, verEcranOption);
+	EEPROM.get(screenLockOptionAdress, screenLockOption);
 	EEPROM.get(SnipeReadyAdress, SnipeReady);
 	EEPROM.get(greenLightHandleAdress, greenLightChargingHandleOption);
 	EEPROM.get(alarmBatAdress, alarmBatOption);
 
 	menu.StartMenu(buzzer);
-	lastTempVerrouilage = currentTime;
+	screenLockLastTimer = currentTime;
 }
 
 void loop() {
 shoot: //step to by-pass non essentials functions
 	currentTime = millis();
 
-	double voltValue = voltCtrl.VoltageValue(BatteryRead);;
+	double voltValue = voltCtrl.VoltageValue(batteryReading);;
 	triggerSwitch = digitalRead(trigger);
 	selectorSwitch = digitalRead(selector);
-	chargerSwitch = digitalRead(charger);
+	chargerSwitch = digitalRead(magazine);
 	handleSwitch = analogRead(chargingHandle);
-	joyBPush = digitalRead(joyB);
-	joyDPush = digitalRead(joyD);
-	joyGPush = digitalRead(joyG);
-	joyHPush = digitalRead(joyH);
+	joyBPush = digitalRead(joyBottom);
+	joyDPush = digitalRead(joyRight);
+	joyGPush = digitalRead(joyLeft);
+	joyHPush = digitalRead(joyUp);
 	joyPushed = digitalRead(joyPush);
 
 	//Fire mode displaying
@@ -195,13 +191,13 @@ shoot: //step to by-pass non essentials functions
 	}
 
 	//Firing
-	if (triggerSwitch == HIGH && !triggerStateFired && chargerState && !blocageState && !alarmBatLow)
+	if (triggerSwitch == HIGH && !triggerStateFired && magState && !emptyMagBlockingState && !alarmBatLow)
 	{
 		switch (selectorSwitch == HIGH ? fullMode : semiMode) {
 		case 1:
 			firing.Fire(solenoid, dwel);
 
-			bbrest -= 1;
+			bbsLeft -= 1;
 			bbtire += 1;
 
 			triggerStateFired = true;
@@ -214,7 +210,7 @@ shoot: //step to by-pass non essentials functions
 				delay(1000 / ROFBurst);
 			}
 
-			bbrest -= burstBB;
+			bbsLeft -= burstBB;
 			bbtire += burstBB;
 
 			triggerStateFired = true;
@@ -224,7 +220,7 @@ shoot: //step to by-pass non essentials functions
 			firing.Fire(solenoid, dwel);
 			delay(1000 / ROFFull);
 
-			bbrest -= 1;
+			bbsLeft -= 1;
 			bbtire -= 1;
 
 			break;
@@ -232,7 +228,7 @@ shoot: //step to by-pass non essentials functions
 			if (!sniperBlocked) {
 				firing.Fire(solenoid, dwel);
 
-				bbrest -= 1;
+				bbsLeft -= 1;
 				bbtire += 1;
 
 				previousMillisBolt = currentTime;
@@ -267,27 +263,27 @@ shoot: //step to by-pass non essentials functions
 	}
 
 	//Magazin Option
-	if (chargerOption)
+	if (magOption)
 	{
 		if (chargerSwitch == HIGH)
 		{
-			chargerState = true;
+			magState = true;
 		}
 		else
 		{
-			chargerState = false;
+			magState = false;
 		}
 	}
 	else {
-		chargerState = true;
+		magState = true;
 	}
 
 	//Empty mag option
-	if (blocageVideOption)
+	if (emptyMagLockOption)
 	{
-		if (bbrest <= 0)
+		if (bbsLeft <= 0)
 		{
-			blocageState = true;
+			emptyMagBlockingState = true;
 		}
 	}
 
@@ -295,7 +291,7 @@ shoot: //step to by-pass non essentials functions
 	if (alarmBBOption)
 	{
 		//"Empty BB's" Alarm
-		if (bbrest <= 0 && alarmEmptyPassed == false)
+		if (bbsLeft <= 0 && alarmEmptyPassed == false)
 		{
 			alarmEmptyPassed = alarm.AlarmEmpty(reloadLEDRed);
 
@@ -306,7 +302,7 @@ shoot: //step to by-pass non essentials functions
 		}
 
 		//"Near Empty" bb's alarm
-		if (bbrest <= alarmBB && alarmLowPassed == false)
+		if (bbsLeft <= alarmBB && alarmLowPassed == false)
 		{
 			alarmLowPassed = alarm.AlarmLowBB(reloadLEDBlue);
 		}
@@ -320,7 +316,7 @@ shoot: //step to by-pass non essentials functions
 	//Battery Voltage Alarm
 	if (alarmBatOption)
 	{
-		if (voltCtrl.alarmVoltage(BatteryRead, currentTime))
+		if (voltCtrl.alarmVoltage(batteryReading, currentTime))
 		{
 			alarm.AlarmBat(reloadLEDRed);
 
@@ -344,7 +340,7 @@ shoot: //step to by-pass non essentials functions
 			alarmEmptyPassed = false;
 			alarmLowPassed = false;
 
-			blocageState = false;
+			emptyMagBlockingState = false;
 
 			if (greenLightChargingHandleOption) {
 				digitalWrite(reloadLEDGreen, 1);
@@ -353,32 +349,32 @@ shoot: //step to by-pass non essentials functions
 				delay(800);
 			}
 
-			bbrest = bbrestChargeurValue;
+			bbsLeft = bbsLeftMagValue;
 		}
 	}
 
 	//Screen lock
-	if (verEcranOption)
+	if (screenLockOption)
 	{
-		int verTime = verrTimer * 1000;
+		int verTime = screenLockLastTimer * 1000;
 
-		if ((currentTime - lastTempVerrouilage) > verTime && !ecranVerr)
+		if ((currentTime - screenLockLastTimer) > verTime && !screenLocked)
 		{
-			menu.MenuVer();
+			menu.lockDisplay();
 			delay(1000);
-			ecranVerr = true;
+			screenLocked = true;
 		}
 
-		if ((currentTime - tempsDever) > 4000 && appuieLong)
+		if ((currentTime - screenUnlockTimer) > 4000 && longPress)
 		{
-			menu.MenuDever();
+			menu.UnlockDisplay();
 			delay(1000);
-			ecranVerr = false;
+			screenLocked = false;
 		}
 	}
 
 	//Reading joystick
-	if (!ecranVerr) {
+	if (!screenLocked) {
 		if (joyBPush == HIGH)
 		{
 			digitalWrite(reloadLEDGreen, 1); //Lighting Green
@@ -388,7 +384,7 @@ shoot: //step to by-pass non essentials functions
 				paramValueMoins = true;
 			}
 			else {
-				sousMenuValue = 0;
+				subMenuValue = 0;
 
 				if (menuValue == 0)
 				{
@@ -399,7 +395,7 @@ shoot: //step to by-pass non essentials functions
 					menuValue = menuValue - 1;
 				}
 
-				lastTempVerrouilage = currentTime;
+				screenLockLastTimer = currentTime;
 			}
 
 			delay(200);
@@ -415,7 +411,7 @@ shoot: //step to by-pass non essentials functions
 				paramValuePlus = true;
 			}
 			else {
-				sousMenuValue = 0;
+				subMenuValue = 0;
 
 				if (menuValue == 6)
 				{
@@ -427,7 +423,7 @@ shoot: //step to by-pass non essentials functions
 				}
 			}
 
-			lastTempVerrouilage = currentTime;
+			screenLockLastTimer = currentTime;
 
 			delay(200);
 			digitalWrite(reloadLEDGreen, 0); //Delighting green
@@ -437,12 +433,12 @@ shoot: //step to by-pass non essentials functions
 		{
 			digitalWrite(reloadLEDGreen, 1); //Lighting Green
 
-			if (sousMenuValue < 3)
+			if (subMenuValue < 3)
 			{
-				sousMenuValue = sousMenuValue + 1;
+				subMenuValue = subMenuValue + 1;
 			}
 
-			lastTempVerrouilage = currentTime;
+			screenLockLastTimer = currentTime;
 
 			delay(200);
 			digitalWrite(reloadLEDGreen, 0); //Delighting green
@@ -452,12 +448,12 @@ shoot: //step to by-pass non essentials functions
 		{
 			digitalWrite(reloadLEDGreen, 1); //Lighting Green
 
-			if (sousMenuValue > 0)
+			if (subMenuValue > 0)
 			{
-				sousMenuValue = sousMenuValue - 1;
+				subMenuValue = subMenuValue - 1;
 			}
 
-			lastTempVerrouilage = currentTime;
+			screenLockLastTimer = currentTime;
 
 			delay(200);
 			digitalWrite(reloadLEDGreen, 0); //Delighting green
@@ -478,148 +474,148 @@ shoot: //step to by-pass non essentials functions
 			enterPressedSave = false;
 		}
 
-		if (ecranVerr == false)
+		if (screenLocked == false)
 		{
-			lastTempVerrouilage = currentTime;
+			screenLockLastTimer = currentTime;
 		}
 
-		if (ecranVerr == true)
+		if (screenLocked == true)
 		{
-			if (appuieLong == false)
+			if (longPress == false)
 			{
-				tempsDever = currentTime;
-				appuieLong = true;
+				screenUnlockTimer = currentTime;
+				longPress = true;
 			}
 		}
 		delay(200);
 		digitalWrite(reloadLEDGreen, 0); //Delighting green
 	}
 
-	if (!joyPushed && appuieLong)
+	if (!joyPushed && longPress)
 	{
-		appuieLong = false;
+		longPress = false;
 	}
 
 	//Menu's
 	switch (menuValue)
 	{
 	case 0:
-		menu.MainDisplay(voltValue, bbrest, bbrestChargeurValue, modeValue, bbtire);
+		menu.MainMenu(voltValue, bbsLeft, bbsLeftMagValue, modeValue, bbtire);
 		break;
 	case 1:
-		menu.MenuFullBurst(ROFFull, ROFBurst, burstBB, sousMenuValue);
+		menu.FullBurstMenu(ROFFull, ROFBurst, burstBB, subMenuValue);
 
-		if (sousMenuValue == 0)
+		if (subMenuValue == 0)
 		{
 			ROFFull = savingToEEPROM(ROFFullAdress, ROFFull, 1, 44);
 		}
 
-		if (sousMenuValue == 1)
+		if (subMenuValue == 1)
 		{
 			ROFBurst = savingToEEPROM(ROFBurstAdress, ROFBurst, 1, 44);
 		}
 
-		if (sousMenuValue == 2)
+		if (subMenuValue == 2)
 		{
 			burstBB = savingToEEPROM(burstBBAdress, burstBB, 1, 20);
 		}
 
 		break;
 	case 2:
-		menu.MenuSniper(timeBolt, SnipeReady, sousMenuValue);
+		menu.SniperMenu(timeBolt, SnipeReady, subMenuValue);
 
-		if (sousMenuValue == 0)
+		if (subMenuValue == 0)
 		{
 			SnipeReady = savingToEEPROM(SnipeReadyAdress, SnipeReady);
 		}
 
-		if (sousMenuValue == 1)
+		if (subMenuValue == 1)
 		{
 			timeBolt = savingToEEPROM(timeBoltAdress, timeBolt, 2, 9);
 		}
 
 		break;
 	case 3:
-		menu.MenuChargeur1(bbrestChargeurValue, chargerOption, buzzOption, blocageVideOption, sousMenuValue);
+		menu.MagMenu1(bbsLeftMagValue, magOption, buzzOption, emptyMagLockOption, subMenuValue);
 
-		if (sousMenuValue == 0)
+		if (subMenuValue == 0)
 		{
-			bbrestChargeurValue = savingToEEPROM(bbrestAdress, bbrestChargeurValue, 1, 1999);
+			bbsLeftMagValue = savingToEEPROM(bbrestAdress, bbsLeftMagValue, 1, 1999);
 		}
 
-		if (sousMenuValue == 1)
+		if (subMenuValue == 1)
 		{
-			blocageVideOption = savingToEEPROM(blocageVideAdress, blocageVideOption);
+			emptyMagLockOption = savingToEEPROM(emptyMagLockingAdress, emptyMagLockOption);
 		}
 
-		if (sousMenuValue == 2)
+		if (subMenuValue == 2)
 		{
-			chargerOption = savingToEEPROM(chargerOptionAdress, chargerOption);
+			magOption = savingToEEPROM(magOptionAdress, magOption);
 		}
 
-		if (sousMenuValue == 3)
+		if (subMenuValue == 3)
 		{
 			buzzOption = savingToEEPROM(buzzOptionAdress, buzzOption);
 		}
 
 		break;
 	case 4:
-		menu.MenuChargeur2(alarmBBOption, alarmBB, handleOption, greenLightChargingHandleOption, sousMenuValue);
+		menu.MagMenu2(alarmBBOption, alarmBB, handleOption, greenLightChargingHandleOption, subMenuValue);
 
-		if (sousMenuValue == 0)
+		if (subMenuValue == 0)
 		{
 			alarmBBOption = savingToEEPROM(alarmBBOptionAdress, alarmBBOption);
 		}
 
-		if (sousMenuValue == 1)
+		if (subMenuValue == 1)
 		{
 			alarmBB = savingToEEPROM(alarmBBAdress, alarmBB, 1, 19);
 		}
 
-		if (sousMenuValue == 2)
+		if (subMenuValue == 2)
 		{
 			handleOption = savingToEEPROM(handleOptionAdress, handleOption);
 		}
 
-		if (sousMenuValue == 3)
+		if (subMenuValue == 3)
 		{
 			greenLightChargingHandleOption = savingToEEPROM(greenLightHandleAdress, greenLightChargingHandleOption);
 		}
 
 		break;
 	case 5:
-		menu.MenuSetting(verrTimer, verEcranOption, alarmBatOption, sousMenuValue);
+		menu.SettingsMenu1(screenLockLastTimer, screenLockOption, alarmBatOption, subMenuValue);
 
-		if (sousMenuValue == 0)
+		if (subMenuValue == 0)
 		{
-			verEcranOption = savingToEEPROM(verEcranOptionAdress, verEcranOption);
+			screenLockOption = savingToEEPROM(screenLockOptionAdress, screenLockOption);
 		}
 
-		if (sousMenuValue == 1)
+		if (subMenuValue == 1)
 		{
-			verrTimer = savingToEEPROM(verrTimerAdress, verrTimer, 30, 180);
+			screenLockLastTimer = savingToEEPROM(screenLockTimerAdress, screenLockLastTimer, 30, 180);
 		}
 
-		if (sousMenuValue == 2)
+		if (subMenuValue == 2)
 		{
 			alarmBatOption = savingToEEPROM(alarmBatAdress, alarmBatOption);
 		}
 
 		break;
 	case 6:
-		menu.MenuSetting2(semiMode, fullMode, dwel, sousMenuValue);
+		menu.SettingMenu2(semiMode, fullMode, dwel, subMenuValue);
 
-		if (sousMenuValue == 0)
+		if (subMenuValue == 0)
 		{
 			semiMode = savingToEEPROM(semiModeAdress, semiMode, 2, 3);
 		}
 
-		if (sousMenuValue == 1)
+		if (subMenuValue == 1)
 		{
 			fullMode = savingToEEPROM(fullModeAdress, fullMode, 2, 3);
 		}
 
-		if (sousMenuValue == 2)
+		if (subMenuValue == 2)
 		{
 			dwel = savingToEEPROM(dwelAdress, dwel, 0, 199);
 		}
