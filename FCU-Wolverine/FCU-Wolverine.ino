@@ -8,9 +8,9 @@
 int trigger = 2;
 int8_t selector = 3;
 int8_t magazine = 4;
-int8_t reloadLEDRed = 7;
+int8_t reloadLEDRed = 5;
 int8_t reloadLEDGreen = 6;
-int8_t reloadLEDBlue = 5;
+int8_t reloadLEDBlue = 7;
 int8_t solenoid = 8;
 int8_t buzzer = 13;
 
@@ -44,7 +44,7 @@ int8_t semiMode;
 int8_t fullMode;
 int8_t timeBolt;
 int16_t dwel;
-int8_t screenLockLastTimer;
+int8_t screenLockTimer;
 String modeValue;
 int8_t menuValue = 0;
 int8_t subMenuValue = 0;
@@ -140,7 +140,7 @@ void setup() {
 	EEPROM.get(fullModeAdress, fullMode);
 	EEPROM.get(timeBoltAdress, timeBolt);
 	EEPROM.get(dwelAdress, dwel);
-	EEPROM.get(screenLockTimerAdress, screenLockLastTimer);
+	EEPROM.get(screenLockTimerAdress, screenLockTimer);
 	EEPROM.get(magOptionAdress, magOption);
 	EEPROM.get(handleOptionAdress, handleOption);
 	EEPROM.get(buzzOptionAdress, buzzOption);
@@ -356,7 +356,7 @@ shoot: //step to by-pass non essentials functions
 	//Screen lock
 	if (screenLockOption)
 	{
-		int verTime = screenLockLastTimer * 1000;
+		int verTime = screenLockTimer * 1000;
 
 		if ((currentTime - screenLockLastTimer) > verTime && !screenLocked)
 		{
@@ -584,7 +584,7 @@ shoot: //step to by-pass non essentials functions
 
 		break;
 	case 5:
-		menu.SettingsMenu1(screenLockLastTimer, screenLockOption, alarmBatOption, subMenuValue);
+		menu.SettingsMenu1(screenLockTimer, screenLockOption, alarmBatOption, subMenuValue);
 
 		if (subMenuValue == 0)
 		{
@@ -593,7 +593,7 @@ shoot: //step to by-pass non essentials functions
 
 		if (subMenuValue == 1)
 		{
-			screenLockLastTimer = savingToEEPROM(screenLockTimerAdress, screenLockLastTimer, 30, 180);
+			screenLockLastTimer = savingToEEPROM(screenLockTimerAdress, screenLockTimer, 30, 180);
 		}
 
 		if (subMenuValue == 2)
