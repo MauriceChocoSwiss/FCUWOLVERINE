@@ -81,7 +81,7 @@ void Menu::FullBurstMenu(int8_t ROFFull, int8_t ROFBurst, int8_t BurstBB, int8_t
 		displayMenu.print(">");
 	}
 	displayMenu.setCursor(80, 32);
-	displayMenu.print("Qte BB:");
+	displayMenu.print("Qty BB:");
 	displayMenu.print(BurstBB);
  displayMenu.sendBuffer();
 }
@@ -92,7 +92,7 @@ void Menu::SniperMenu(int8_t timeBolt, bool greenLed, int8_t subMenuValue)
 
 	//
 	displayMenu.setCursor(0, 8);
-	displayMenu.print("LED Vert ?:");
+	displayMenu.print("Green LED ?:");
 	displayMenu.print(greenLed);
 	if (subMenuValue == 0)
 	{
@@ -101,7 +101,7 @@ void Menu::SniperMenu(int8_t timeBolt, bool greenLed, int8_t subMenuValue)
 
 	//
 	displayMenu.setCursor(0, 32);
-	displayMenu.print("Interv.:");
+	displayMenu.print("Timing.:");
 	displayMenu.print(timeBolt);
 	if (subMenuValue == 1)
 	{
@@ -130,12 +130,12 @@ void Menu::MagMenu1(int16_t magCapacity, bool magSwitch, bool buzzer, bool empty
 		displayMenu.print(">");
 	}
 	displayMenu.setCursor(72, 8);
-	displayMenu.print("Bloc ?:");
+	displayMenu.print("Block ?:");
 	displayMenu.print(emptyMagBlocking);
 
 	//
 	displayMenu.setCursor(0, 32);
-	displayMenu.print("Charg ?:");
+	displayMenu.print("Mag ?:");
 	displayMenu.print(magSwitch);
 	if (subMenuValue == 2)
 	{
@@ -175,7 +175,7 @@ void Menu::MagMenu2(bool alarm, int8_t alarmLowBB, bool chargingHandle, bool gre
 		displayMenu.print(">");
 	}
 	displayMenu.setCursor(76, 8);
-	displayMenu.print("Qte:");
+	displayMenu.print("Qty:");
 	displayMenu.print(alarmLowBB);
 
 	//
@@ -219,7 +219,7 @@ void Menu::SettingsMenu1(int8_t screenLockValue, bool screenLockOption, bool Low
 		displayMenu.print(">");
 	}
 	displayMenu.setCursor(76, 8);
-	displayMenu.print("Time:");
+	displayMenu.print("Timer:");
 	displayMenu.print(screenLockValue);
 
 	//
@@ -272,7 +272,7 @@ void Menu::UnlockDisplay()
 	displayMenu.clearBuffer();
 
 	displayMenu.setCursor(0, 12);
-	displayMenu.print("Deverrouillage !");
+	displayMenu.print("Unlocking !");
 
 	displayMenu.sendBuffer();
 }
@@ -282,7 +282,7 @@ void Menu::lockDisplay()
 	displayMenu.clearBuffer();
 
 	displayMenu.setCursor(0, 12);
-	displayMenu.print("Verrouillage !");
+	displayMenu.print("Locking !");
 
   displayMenu.sendBuffer();
 
