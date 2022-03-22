@@ -5,8 +5,8 @@
 #include <EEPROM.h>
 
 //pin assignment
-int trigger = 2;
-int8_t selector = 3;
+int trigger = 3;
+int8_t selector = 2;
 int8_t magazine = 4;
 int8_t reloadLEDRed = 5;
 int8_t reloadLEDGreen = 6;
