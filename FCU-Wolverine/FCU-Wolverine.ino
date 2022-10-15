@@ -354,7 +354,7 @@ shoot: //step to by-pass non essentials functions
 	}
 
 	//Screen lock
-	if (screenLockOption)
+	if (screenLockOption && !joyPushed)
 	{
 		int verTime = screenLockTimer * 1000;
 
