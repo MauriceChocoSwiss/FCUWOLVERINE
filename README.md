@@ -10,6 +10,12 @@ In addition to standards mode like semi, burst and full auto, a sniper mode is a
 
 ---
 
+For the switch, use something like this : https://aliexpress.com/item/32847441181.html?spm=a2g0o.order_list.0.0.8b0b5e5brNzxPX&gatewayAdapt=glo2fra
+
+And a screen like this : https://aliexpress.com/item/32815893431.html?spm=a2g0o.order_list.0.0.8b0b5e5brNzxPX&gatewayAdapt=glo2fra
+
+---
+
 ## Basic features & specs 
 - Only lipo 2S compatibility -- Voltage control and warning, block firing if battery is too low -> see menu settings to find options relative to battery voltage
 - Dwel and rof setting. Dwel is common for all mode and ROF for burst and full auto mode.
