@@ -8,8 +8,8 @@
 class VoltageCtrl {
 	public:
 		VoltageCtrl();
-		double VoltageValue(int8_t pin);
-		bool alarmVoltage(int8_t pin, unsigned long currentMillis);
+		double VoltageValue(uint8_t pin);
+		bool alarmVoltage(uint8_t pin, unsigned long currentMillis);
 };
 
 #endif

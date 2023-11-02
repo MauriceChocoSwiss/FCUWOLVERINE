@@ -5,22 +5,22 @@
 #include <EEPROM.h>
 
 //pin assignment
-int trigger = 3;
-int8_t selector = 2;
-int8_t magazine = 4;
-int8_t reloadLEDRed = 5;
-int8_t reloadLEDGreen = 6;
-int8_t reloadLEDBlue = 7;
-int8_t solenoid = 8;
-int8_t buzzer = 13;
+uint8_t trigger = 3;
+uint8_t selector = 2;
+uint8_t magazine = 4;
+uint8_t reloadLEDRed = 5;
+uint8_t reloadLEDGreen = 6;
+uint8_t reloadLEDBlue = 7;
+uint8_t solenoid = 8;
+uint8_t buzzer = 13;
 
-int8_t joyBottom = 12;
-int8_t joyLeft = 11;
-int8_t joyUp = 10;
-int8_t joyRight = 9;
-int8_t joyPush = A0;
-int8_t chargingHandle = A7;
-int8_t batteryReading = A1;
+uint8_t joyBottom = 12;
+uint8_t joyLeft = 11;
+uint8_t joyUp = 10;
+uint8_t joyRight = 9;
+uint8_t joyPush = A0;
+uint8_t chargingHandle = A7;
+uint8_t batteryReading = A1;
 
 //set switch states to 0
 int16_t triggerSwitch = 0;
@@ -36,18 +36,18 @@ int16_t joyPushed = 0;
 //local variables
 int16_t bbsLeftMagValue;
 int16_t bbsLeft;
-int8_t alarmBB;
-int8_t ROFFull;
-int8_t ROFBurst;
-int8_t burstBB;
-int8_t semiMode;
-int8_t fullMode;
-int8_t timeBolt;
+uint16_t alarmBB;
+uint8_t ROFFull;
+uint8_t ROFBurst;
+uint8_t burstBB;
+uint8_t semiMode;
+uint8_t fullMode;
+uint8_t timeBolt;
 int16_t dwel;
-int8_t screenLockTimer;
+uint8_t screenLockTimer;
 String modeValue;
-int8_t menuValue = 0;
-int8_t subMenuValue = 0;
+uint8_t menuValue = 0;
+uint8_t subMenuValue = 0;
 bool paramValuePlus = false;
 bool paramValueMoins = false;
 int16_t bbtire = 0;
@@ -63,7 +63,7 @@ bool buzzOption;
 bool emptyMagLockOption;
 bool alarmBBOption;
 bool screenLockOption;
-bool SnipeReady;
+bool SnipeReadyLEDOPtion;
 bool greenLightChargingHandleOption;
 bool alarmBatOption;
 
@@ -81,25 +81,25 @@ bool screenLocked = false;
 bool longPress = false;
 
 //Eeprom Addresses
-int8_t ROFFullAdress = 0; //2
-int8_t ROFBurstAdress = 2; //2
-int8_t burstBBAdress = 4; //2
-int8_t SnipeReadyAdress = 6; //1
-int8_t timeBoltAdress = 7; //2
-int8_t bbrestAdress = 9; //3
-int8_t magOptionAdress = 12; //1
-int8_t buzzOptionAdress = 13; //1
-int8_t emptyMagLockingAdress = 14; //1
-int8_t alarmBBOptionAdress = 15; //1
-int8_t alarmBBAdress = 16; //2
-int8_t handleOptionAdress = 18; //1
-int8_t greenLightHandleAdress = 19; //1
-int8_t screenLockTimerAdress = 20; //3
-int8_t dwelAdress = 23; //3
-int8_t screenLockOptionAdress = 26; //1
-int8_t alarmBatAdress = 27; //1
-int8_t semiModeAdress = 28;//2
-int8_t fullModeAdress = 30;//
+uint8_t ROFFullAdress = 0; //2
+uint8_t ROFBurstAdress = 2; //2
+uint8_t burstBBAdress = 4; //2
+uint8_t SnipeReadyAdress = 6; //1
+uint8_t timeBoltAdress = 7; //2
+uint8_t bbrestAdress = 9; //3
+uint8_t magOptionAdress = 12; //1
+uint8_t buzzOptionAdress = 13; //1
+uint8_t emptyMagLockingAdress = 14; //1
+uint8_t alarmBBOptionAdress = 15; //1
+uint8_t alarmBBAdress = 16; //2
+uint8_t handleOptionAdress = 18; //1
+uint8_t greenLightHandleAdress = 19; //1
+uint8_t screenLockTimerAdress = 20; //3
+uint8_t dwelAdress = 23; //3
+uint8_t screenLockOptionAdress = 26; //1
+uint8_t alarmBatAdress = 27; //1
+uint8_t semiModeAdress = 28;//2
+uint8_t fullModeAdress = 30;//
 
 
 //Class
@@ -147,7 +147,7 @@ void setup() {
 	EEPROM.get(emptyMagLockingAdress, emptyMagLockOption);
 	EEPROM.get(alarmBBOptionAdress, alarmBBOption);
 	EEPROM.get(screenLockOptionAdress, screenLockOption);
-	EEPROM.get(SnipeReadyAdress, SnipeReady);
+	EEPROM.get(SnipeReadyAdress, SnipeReadyLEDOPtion);
 	EEPROM.get(greenLightHandleAdress, greenLightChargingHandleOption);
 	EEPROM.get(alarmBatAdress, alarmBatOption);
 
@@ -243,7 +243,7 @@ shoot: //step to by-pass non essentials functions
 			{
 				sniperBlocked = false;
 
-				if (SnipeReady) {
+				if (SnipeReadyLEDOPtion) {
 					digitalWrite(reloadLEDGreen, 1);
 					delay(10);
 					digitalWrite(reloadLEDGreen, 0);
@@ -522,11 +522,11 @@ shoot: //step to by-pass non essentials functions
 
 		break;
 	case 2:
-		menu.SniperMenu(timeBolt, SnipeReady, subMenuValue);
+		menu.SniperMenu(timeBolt, SnipeReadyLEDOPtion, subMenuValue);
 
 		if (subMenuValue == 0)
 		{
-			SnipeReady = savingToEEPROM(SnipeReadyAdress, SnipeReady);
+			SnipeReadyLEDOPtion = savingToEEPROM(SnipeReadyAdress, SnipeReadyLEDOPtion);
 		}
 
 		if (subMenuValue == 1)
@@ -626,7 +626,7 @@ shoot: //step to by-pass non essentials functions
 	paramValuePlus = false;
 }
 
-int16_t savingToEEPROM(int8_t eepromAddress, int16_t parameter, int16_t minValue, int16_t maxValue)
+int16_t savingToEEPROM(uint8_t eepromAddress, int16_t parameter, int16_t minValue, int16_t maxValue)
 {
 	if (enterPressed)
 	{
@@ -650,7 +650,7 @@ int16_t savingToEEPROM(int8_t eepromAddress, int16_t parameter, int16_t minValue
 	return parameter;
 }
 
-bool savingToEEPROM(int8_t eepromAddress, bool parameter)
+bool savingToEEPROM(uint8_t eepromAddress, bool parameter)
 {
 	if (enterPressed)
 	{
