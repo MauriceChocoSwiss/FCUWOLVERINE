@@ -30,13 +30,13 @@ VoltageCtrl::VoltageCtrl() {
 
 }
 
-double VoltageCtrl::VoltageValue(int8_t pin) {
+double VoltageCtrl::VoltageValue(uint8_t pin) {
 	float real_vin = (((analogRead(pin) * 1.1)/ analogReadReference()) * 4) -0.20;
 	
 	return real_vin;
 }
 
-bool VoltageCtrl::alarmVoltage(int8_t pin, unsigned long currentMillis)
+bool VoltageCtrl::alarmVoltage(uint8_t pin, unsigned long currentMillis)
 {
 	if (currentMillis - previousMillisAlarm >= 30000) {
 
