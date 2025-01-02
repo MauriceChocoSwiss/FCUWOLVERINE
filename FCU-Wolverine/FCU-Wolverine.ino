@@ -581,7 +581,7 @@ shoot:  //step to by-pass non essentials functions
         }
 
         if (subMenuValue == 2) {
-          dwel = savingToEEPROM(dwelAdress, dwel, 0, 199);
+          dwel = savingToEEPROM(dwelAdress, dwel, 0, 2999);
         }
         break;
     }
