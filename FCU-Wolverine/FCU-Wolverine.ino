@@ -6,12 +6,12 @@
 #include "DelayTimer.h"
 
 //pin assignment
-uint8_t trigger = 3;
-uint8_t selector = 2;
+uint8_t trigger = 2;
+uint8_t selector = 3;
 uint8_t magazine = 4;
-uint8_t reloadLEDRed = 5;
+uint8_t reloadLEDRed = 7;
 uint8_t reloadLEDGreen = 6;
-uint8_t reloadLEDBlue = 7;
+uint8_t reloadLEDBlue = 5;
 uint8_t solenoid = 8;
 uint8_t buzzer = 13;
 
@@ -620,11 +620,11 @@ bool savingToEEPROM(uint8_t eepromAddress, bool parameter) {
     }
   }
 
-	if (enterPressedSave)
+	if (saveEdit)
 	{
 		//Saving in EEPROM
 		EEPROM.put(eepromAddress, parameter);
-		enterPressedSave = false;
+		saveEdit = false;
 	}
 	return parameter;
 }
