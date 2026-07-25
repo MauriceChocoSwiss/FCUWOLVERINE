@@ -20,7 +20,7 @@ And a screen like this : https://aliexpress.com/item/32815893431.html?spm=a2g0o.
 - Only lipo 2S compatibility -- Voltage control and warning, block firing if battery is too low -> see menu settings to find options relative to battery voltage
 - Dwel and rof setting. Dwel is common for all mode and ROF for burst and full auto mode.
 - Sniper mode with adjustable delay
-- Magazin settings -- Max bb's per mag settings, blocking fire when "empty mag", alarm "near to empty", charging handle to reset mag capacity, mag switch to prevent blank fire
+- Magazin settings -- Max bb's per mag settings, blocking fire when "mag is empty", alarm "near to empty", charging handle to reset mag capacity, mag switch to prevent blank fire
 
 For more details about options and features, see menus below ;)
 
@@ -30,62 +30,53 @@ Menu list by order
 
 NOTA: 0 is for no or false and 1 for yes or true
 
-### Main menu -> 
+### Main menu (if not in programming mode)-> 
 
   - Top Left: theorical bb's remaining in the mag and theorical bb's amount in the mag
   
   - Top Right: total bb's shoot since powered up
   
-  - Bottom Left: Firing mode. For the burst, the ammount is the burst quantity
+  - Bottom Left: Firing mode. For the burst, burst quantity displayed
   
-  - Bottom Right: Tension de la batterie
+  - Bottom Right: battery voltage
 
-### For the next menus, i'll explain them when you go UP
+### Programing menus (navigate with up and down)
 
 ### Burst /Full auto Menu -> 
 
-  - Top Left: Rate of fire in full auto
+  - Top Left: Rate of fire in Full auto
   
-  - Top Right: Rate of fire in Burst mode
+  - Top Right: Rate of fire in Burst
   
-  - Bottom Left: Burst bb count
+  - Bottom Left: Burst bb quantity
 
 ### Sniper Menu ->
 
   - Top left: Activating green LED for "Ready to shoot" signal
   
-  - Bottom left: Delay to simulate sniper mode
+  - Bottom left: Delay to simulate sniper mode (can't soot during pause)
   
 ### Mag Menu -> 
 
   - Top Left: Theorical bb's count in mag (can be less than real capacity)
   
-  - Top Right: Activating blocking when bb's count fall to 0
+  - Top Right: Activating blocking when bb's count left equal 0
   
-  - Bottom Left: Activating mag detection (via wired switch). If ON, the fcu will fire only if a the mag switch is pushed. If OFF, the FCU will work anytime
+  - Bottom Left: Activating mag detection (via wired binary switch). If ON, the fcu will fire only if a the mag switch is actived. If OFF, the FCU will work anytime
   
-  - Bottom Right: Activating of "Low capacity" buzzer
+  - Bottom Right: Activating of "Mag almost empty" buzzer
 
 ### Mag Menu 2 -> 
   
-  - Top Left: Activating of "low capacity" and "Empty mag" alarm (only LED's)
+  - Top Left: Activation of "Mag almost empty" and "Empty mag" alarm LED's
   
-  - Bottom Right: BB's amount for "Low capacity".
+  - Bottom Right: BB's amount for "Mag almost empty".
   
-  - Bottom Left: Activating of the charging handle/ If ON + empty mag blocking ON, if you change the mag without manipulate the charging handle, you can't fire
+  - Bottom Left: Activation of the charging handle / If ON + empty mag blocking ON, if you change the mag you need th cook to be able to shoot
   
   - Bottom Right: Charging handle LED, meaning "Ready to shoot"
 
 ### Settings Menu -> 
-  
-  - Top Left: Screen locking -> unlocking delay : 3 Sec
-  
-  - Top Right: Screen off delay 30sec by 30sec
-  
-  - Bottom Left: Voltage alarm with shoot blocking 
-  
-### Settings Menu 2 ->
-
 Values details for selector
   1: Semi
   2: Burst
@@ -93,6 +84,8 @@ Values details for selector
   4: Sniper
   
   - Top Left: Selector on SEMI shooting mode
+
+  - Top Right: Voltage alarm with shoot blocking 
   
   - Bottom Left : Selector FULL auto shooting mode
   
