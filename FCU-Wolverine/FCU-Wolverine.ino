@@ -33,12 +33,11 @@ int16_t joyLeftPush = 0;
 int16_t joyUpPush = 0;
 int16_t joyRightPush = 0;
 int16_t joyCenterPush = 0;
-int16_t joyCenterPushLastState = 0;
 
 //local variables
 int16_t bbsLeftMagValue;
 int16_t bbsLeft;
-int8_t alarmBB;
+uint8_t alarmBB;
 uint8_t ROFFull;
 uint8_t ROFBurst;
 uint8_t burstBB;
@@ -46,25 +45,19 @@ uint8_t semiMode;
 uint8_t fullMode;
 uint8_t timeBolt;
 uint16_t delayBolt;
-int16_t dwel;
-uint8_t screenLockTimerValue;
-uint16_t lockScreenDelay;
-bool screenBlocked;
-unsigned long lastCenterPushed;
-unsigned long longPressTime;
+uint16_t dwel;
+unsigned long firstCenterPushed;
 String modeValue;
 uint8_t menuValue = 0;
 uint8_t subMenuValue = 0;
 bool paramValuePlus = false;
 bool paramValueMoins = false;
-int16_t bbsFired = 0;
-long screenLastActiveTime;
-long screenUnlockTimer;
+uint16_t bbsFired = 0;
 unsigned long previousMillisBolt = 0;
 unsigned long currentTime;
+uint8_t fivePressCount = 0;
 
 //Delay
-DelayTimer lockScreenDelayTimer = DelayTimer(1000);
 DelayTimer firingTimer;
 
 //options
@@ -88,8 +81,7 @@ bool alarmEmptyPassed = false;
 bool editMode = false;
 bool saveEdit = false;
 bool alarmBatLow = false;
-bool screenLocked = false;
-bool longPress = false;
+bool programingMode = false;
 
 //Eeprom Addresses
 uint8_t ROFFullAdress = 0;            //2
@@ -151,19 +143,16 @@ void setup() {
   EEPROM.get(fullModeAdress, fullMode);
   EEPROM.get(timeBoltAdress, timeBolt);
   EEPROM.get(dwelAdress, dwel);
-  EEPROM.get(screenLockTimerAdress, screenLockTimerValue);
   EEPROM.get(magOptionAdress, magOption);
   EEPROM.get(handleOptionAdress, handleOption);
   EEPROM.get(buzzOptionAdress, buzzOption);
   EEPROM.get(emptyMagLockingAdress, emptyMagLockOption);
   EEPROM.get(alarmBBOptionAdress, alarmBBOption);
-  EEPROM.get(screenLockOptionAdress, screenLockOption);
   EEPROM.get(SnipeReadyAdress, SnipeReadyLEDOPtion);
   EEPROM.get(greenLightHandleAdress, greenLightChargingHandleOption);
   EEPROM.get(alarmBatAdress, alarmBatOption);
 
   menu.StartMenu(buzzer);
-  screenLastActiveTime = currentTime;
 }
 
 void loop() {
@@ -180,14 +169,6 @@ shoot:  //step to by-pass non essentials functions
   joyLeftPush = digitalRead(joyLeft);
   joyUpPush = digitalRead(joyUp);
   joyCenterPush = digitalRead(joyCenter);
-
-  //long press center switch detection
-  if (joyCenterPush && !joyCenterPushLastState) {
-    lastCenterPushed = currentTime;
-  } else if (!joyCenterPush) {
-    lastCenterPushed = currentTime;
-  }
-  longPressTime = (currentTime - lastCenterPushed);
 
   //Fire mode displaying
   switch (selectorSwitch == HIGH ? fullMode : semiMode) {
@@ -235,7 +216,7 @@ shoot:  //step to by-pass non essentials functions
         break;
       case 3:
         if (firingTimer.isTimeReachedAutoReset(currentTime, (1000 / ROFFull))) {
-                    firing.Fire(solenoid, dwel);
+          firing.Fire(solenoid, dwel);
           bbsLeft -= 1;
           bbsFired += 1;
         }
@@ -308,14 +289,14 @@ shoot:  //step to by-pass non essentials functions
     }
   }
 
-  //testing trigger test to by-pass
-  if (triggerSwitch == HIGH) {
+  //check trigger to by-pass if we are not in programming mode
+  if (triggerSwitch == HIGH && !programingMode) {
     goto shoot;  //by-passing
   }
 
   //Battery Voltage Alarm
   if (alarmBatOption) {
-    if (voltCtrl.alarmVoltage(batteryReading, currentTime)) {
+    if (voltCtrl.alarmVoltage(voltValue, currentTime)) {
       alarm.AlarmBat(reloadLEDRed);
 
       alarmBatLow = true;
@@ -323,8 +304,6 @@ shoot:  //step to by-pass non essentials functions
       if (buzzOption == true) {
         alarm.BuzzerBat(buzzer);
       }
-    } else {
-      alarmBatLow = false;
     }
   }
 
@@ -347,40 +326,8 @@ shoot:  //step to by-pass non essentials functions
     }
   }
 
-  //Screen lock
-  if (screenLockOption) {
-    lockScreenDelay = screenLockTimerValue * 1000;
-
-    //show screen locked message if press when locked
-    if (screenLocked && joyCenterPush && longPressTime == 0) {
-      menu.lockDisplay();
-    }
-
-    //lock screen
-    if ((currentTime - screenLastActiveTime) > lockScreenDelay && !screenLocked) {
-      if (!screenBlocked) {
-        lockScreenDelayTimer.setLastTime(currentTime);
-      }
-
-      screenBlocked = true;
-      menu.lockDisplay();
-      if (lockScreenDelayTimer.isTimeReached(currentTime) && !screenLocked) {
-        screenLocked = true;
-        screenBlocked = false;
-      }
-    }
-
-    //unlock screen
-    if (longPressTime > 4000 && screenLocked) {
-      menu.UnlockDisplay();
-      delay(1000);
-      screenLastActiveTime = currentTime;
-      screenLocked = false;
-    }
-  }
-
   //Reading joystick
-  if (!screenLocked) {
+  if (programingMode) {
     if (joyBottomPush == HIGH) {
       digitalWrite(reloadLEDBlue, 1);  //Lighting Green
       digitalWrite(reloadLEDRed, 1);   //Lighting Green
@@ -392,13 +339,12 @@ shoot:  //step to by-pass non essentials functions
         subMenuValue = 0;
 
         if (menuValue == 0) {
-          menuValue = 6;
+          menuValue = 5;
         } else {
           menuValue = menuValue - 1;
         }
         delay(200);
       }
-      screenLastActiveTime = currentTime;
       digitalWrite(reloadLEDBlue, 0);  //Delighting green
       digitalWrite(reloadLEDRed, 0);   //Delighting green
     }
@@ -413,7 +359,7 @@ shoot:  //step to by-pass non essentials functions
       } else {
         subMenuValue = 0;
 
-        if (menuValue == 6) {
+        if (menuValue == 5) {
           menuValue = 0;
         } else {
           menuValue = menuValue + 1;
@@ -421,7 +367,6 @@ shoot:  //step to by-pass non essentials functions
         delay(200);
       }
 
-      screenLastActiveTime = currentTime;
       digitalWrite(reloadLEDBlue, 0);  //Delighting green
       digitalWrite(reloadLEDRed, 0);   //Delighting green
     }
@@ -434,7 +379,6 @@ shoot:  //step to by-pass non essentials functions
         subMenuValue = subMenuValue + 1;
       }
 
-      screenLastActiveTime = currentTime;
       delay(200);
       digitalWrite(reloadLEDBlue, 0);  //Delighting green
       digitalWrite(reloadLEDRed, 0);   //Delighting green
@@ -448,13 +392,13 @@ shoot:  //step to by-pass non essentials functions
         subMenuValue = subMenuValue - 1;
       }
 
-      screenLastActiveTime = currentTime;
       delay(200);
       digitalWrite(reloadLEDBlue, 0);  //Delighting green
       digitalWrite(reloadLEDRed, 0);   //Delighting green
     }
   }
 
+  //Center button 
   if (joyCenterPush) {
     digitalWrite(reloadLEDBlue, 1);  //Lighting Green
     digitalWrite(reloadLEDRed, 1);   //Lighting Green
@@ -468,24 +412,35 @@ shoot:  //step to by-pass non essentials functions
       saveEdit = false;
     }
 
-    screenLastActiveTime = currentTime;
-    delay(200);
+    delay(50);
     digitalWrite(reloadLEDBlue, 0);  //Delighting green
     digitalWrite(reloadLEDRed, 0);   //Delighting green
-  }
 
-  //reset long press
-  if (!joyCenterPush && longPress) {
-    longPress = false;
+    //if we haven't pushed the center button from last 1s, we reset the counter and restart multipress
+    if (firstCenterPushed < currentTime - 1000) {
+      fivePressCount = 1;
+      firstCenterPushed = currentTime;
+    } else {
+      fivePressCount++;
+    }
+
+    //if we hit 5 times in 1s the center button, we enter/left programming mode
+    if (fivePressCount >= 5) {
+      fivePressCount = 0;
+      programingMode = !programingMode;
+      if (programingMode) {
+        menu.EnterProgMode();
+      } else {
+        menu.SettingsSaved();
+      }
+      delay(500);
+    }
   }
 
   //Menu's
-  if (!screenBlocked) {
+  if (programingMode) {
     switch (menuValue) {
       case 0:
-        menu.MainMenu(voltValue, bbsLeft, bbsLeftMagValue, modeValue, bbsFired);
-        break;
-      case 1:
         menu.FullBurstMenu(ROFFull, ROFBurst, burstBB, subMenuValue);
 
         if (subMenuValue == 0) {
@@ -501,7 +456,7 @@ shoot:  //step to by-pass non essentials functions
         }
 
         break;
-      case 2:
+      case 1:
         menu.SniperMenu(timeBolt, SnipeReadyLEDOPtion, subMenuValue);
 
         if (subMenuValue == 0) {
@@ -513,7 +468,7 @@ shoot:  //step to by-pass non essentials functions
         }
 
         break;
-      case 3:
+      case 2:
         menu.MagMenu1(bbsLeftMagValue, magOption, buzzOption, emptyMagLockOption, subMenuValue);
 
         if (subMenuValue == 0) {
@@ -533,7 +488,7 @@ shoot:  //step to by-pass non essentials functions
         }
 
         break;
-      case 4:
+      case 3:
         menu.MagMenu2(alarmBBOption, alarmBB, handleOption, greenLightChargingHandleOption, subMenuValue);
 
         if (subMenuValue == 0) {
@@ -553,24 +508,8 @@ shoot:  //step to by-pass non essentials functions
         }
 
         break;
-      case 5:
-        menu.SettingsMenu1(screenLockTimerValue, screenLockOption, alarmBatOption, subMenuValue);
-
-        if (subMenuValue == 0) {
-          screenLockOption = savingToEEPROM(screenLockOptionAdress, screenLockOption);
-        }
-
-        if (subMenuValue == 1) {
-          screenLockTimerValue = savingToEEPROM(screenLockTimerAdress, screenLockTimerValue, 31, 180);
-        }
-
-        if (subMenuValue == 2) {
-          alarmBatOption = savingToEEPROM(alarmBatAdress, alarmBatOption);
-        }
-
-        break;
-      case 6:
-        menu.SettingMenu2(semiMode, fullMode, dwel, subMenuValue);
+      case 4:
+        menu.SettingMenu(semiMode, fullMode, dwel, alarmBatOption, subMenuValue);
 
         if (subMenuValue == 0) {
           semiMode = savingToEEPROM(semiModeAdress, semiMode, 2, 3);
@@ -583,13 +522,18 @@ shoot:  //step to by-pass non essentials functions
         if (subMenuValue == 2) {
           dwel = savingToEEPROM(dwelAdress, dwel, 0, 2999);
         }
+
+        if (subMenuValue == 3) {
+          alarmBatOption = savingToEEPROM(alarmBatAdress, alarmBatOption);
+        }
         break;
     }
+  } else {
+    menu.MainMenu(voltValue, bbsLeft, bbsLeftMagValue, modeValue, bbsFired);
   }
 
   paramValueMoins = false;
   paramValuePlus = false;
-  joyCenterPushLastState = joyCenterPush;
 }
 
 int16_t savingToEEPROM(uint8_t eepromAddress, int16_t parameter, int16_t minValue, int16_t maxValue) {

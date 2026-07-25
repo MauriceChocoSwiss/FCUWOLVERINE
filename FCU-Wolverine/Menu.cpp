@@ -180,37 +180,7 @@ void Menu::MagMenu2(bool alarm, uint8_t alarmLowBB, bool chargingHandle, bool gr
   displayMenu.sendBuffer();
 }
 
-void Menu::SettingsMenu1(uint8_t screenLockValue, bool screenLockOption, bool LowBat, uint8_t subMenuValue) {
-  displayMenu.clearBuffer();
-
-  //
-  displayMenu.setCursor(0, 8);
-  displayMenu.print(F("Ver ?:"));
-  displayMenu.print(screenLockOption);
-  if (subMenuValue == 0) {
-    displayMenu.print(F("<"));
-  }
-
-  //
-  displayMenu.setCursor(70, 8);
-  if (subMenuValue == 1) {
-    displayMenu.print(F(">"));
-  }
-  displayMenu.setCursor(76, 8);
-  displayMenu.print(F("Timer:"));
-  displayMenu.print(screenLockValue);
-
-  //
-  displayMenu.setCursor(0, 32);
-  displayMenu.print(F("Al Bat ?:"));
-  displayMenu.print(LowBat);
-  if (subMenuValue == 2) {
-    displayMenu.print(F("<"));
-  }
-  displayMenu.sendBuffer();
-}
-
-void Menu::SettingMenu2(uint8_t semi, uint8_t full, uint16_t dwel, uint8_t subMenuValue) {
+void Menu::SettingMenu(uint8_t semi, uint8_t full, uint16_t dwel, bool LowBat,uint8_t subMenuValue) {
   displayMenu.clearBuffer();
 
   //
@@ -237,23 +207,32 @@ void Menu::SettingMenu2(uint8_t semi, uint8_t full, uint16_t dwel, uint8_t subMe
   displayMenu.setCursor(70, 32);
   displayMenu.print(F("DWEL:"));
   displayMenu.print(dwel);
+
+    //
+      displayMenu.setCursor(60, 8);
+  if (subMenuValue == 3) {
+    displayMenu.print(F(">"));
+  }
+  displayMenu.setCursor(66, 8);
+  displayMenu.print(F("Al Bat ?:"));
+  displayMenu.print(LowBat);
   displayMenu.sendBuffer();
 }
 
-void Menu::UnlockDisplay() {
+void Menu::SettingsSaved() {
   displayMenu.clearBuffer();
 
   displayMenu.setCursor(0, 12);
-  displayMenu.print(F("Unlocking !"));
+  displayMenu.print(F("Saved !"));
 
   displayMenu.sendBuffer();
 }
 
-void Menu::lockDisplay() {
+void Menu::EnterProgMode() {
   displayMenu.clearBuffer();
 
   displayMenu.setCursor(0, 12);
-  displayMenu.print(F("Locking !"));
+  displayMenu.print(F("Enter Prog Mode !"));
 
   displayMenu.sendBuffer();
 }
