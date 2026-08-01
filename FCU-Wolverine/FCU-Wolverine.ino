@@ -1,4 +1,5 @@
 #include "Alarm.h"
+
 #include "Menu.h"
 #include "VoltageCtrl.h"
 #include "Firing.h"
@@ -82,6 +83,7 @@ bool editMode = false;
 bool saveEdit = false;
 bool alarmBatLow = false;
 bool programingMode = false;
+bool fivePressBlocked = false;
 
 //Eeprom Addresses
 uint8_t ROFFullAdress = 0;            //2
@@ -398,7 +400,7 @@ shoot:  //step to by-pass non essentials functions
     }
   }
 
-  //Center button 
+  //Center button
   if (joyCenterPush) {
     digitalWrite(reloadLEDBlue, 1);  //Lighting Green
     digitalWrite(reloadLEDRed, 1);   //Lighting Green
@@ -420,8 +422,12 @@ shoot:  //step to by-pass non essentials functions
     if (firstCenterPushed < currentTime - 1000) {
       fivePressCount = 1;
       firstCenterPushed = currentTime;
-    } else {
+      fivePressBlocked = true;
+    }
+
+    if (!fivePressBlocked) {
       fivePressCount++;
+      fivePressBlocked = true;
     }
 
     //if we hit 5 times in 1s the center button, we enter/left programming mode
@@ -435,6 +441,8 @@ shoot:  //step to by-pass non essentials functions
       }
       delay(500);
     }
+  } else {
+    fivePressBlocked = false;
   }
 
   //Menu's
