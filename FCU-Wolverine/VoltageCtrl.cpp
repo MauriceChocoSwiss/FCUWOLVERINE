@@ -1,6 +1,7 @@
 #include "VoltageCtrl.h"
 
 unsigned long previousMillisAlarm = 0;
+uint16_t lowBatteryCount = 0;
 
 /** Mesure la r�f�rence interne � 1.1 volts */
 unsigned int analogReadReference(void) {
@@ -27,21 +28,21 @@ unsigned int analogReadReference(void) {
 }
 
 VoltageCtrl::VoltageCtrl() {
-
 }
 
 double VoltageCtrl::VoltageValue(uint8_t pin) {
-	return (((analogRead(pin) * 1.1) / analogReadReference()) * 4) -0.20;
+	return (((analogRead(pin) * 1.1) / analogReadReference()) * 4) - 0.20;
 }
 
-bool VoltageCtrl::alarmVoltage(uint8_t voltValue, unsigned long currentMillis)
-{
+bool VoltageCtrl::alarmVoltage(uint8_t voltValue, unsigned long currentMillis) {
 	if (currentMillis - previousMillisAlarm >= 30000) {
-		if (voltValue < 7.40)
-		{
-			return true;
+		if (voltValue < 6) {
+			lowBatteryCount++;
 		}
+
 		previousMillisAlarm = currentMillis;
+
+		if (lowBatteryCount >= 1000) { return true; }
 	}
 	return false;
 }
